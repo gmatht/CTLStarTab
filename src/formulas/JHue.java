@@ -53,6 +53,17 @@ public class JHue extends java.util.BitSet {
         }
 */
 	
+/*	public boolean get(int i) {
+		boolean b=super.get(i);
+		if (b) {
+			JNode.out.println("GOT: "+formulaToString(i));
+		} else {
+			JNode.out.println("get: NOT "+formulaToString(i));
+		}
+		return b;	
+	}
+	*/
+//	private void f(int i, int j){
 	public void set(int i) {
 		//.out.format("Before: %d %s\n",i,toString());
 		if (cached_hashcode!=-1) throw new RuntimeException ("Modifying used Hue.");
@@ -64,6 +75,7 @@ public class JHue extends java.util.BitSet {
 		}
 		
 		if (!get(i)) {
+			JNode.out.println("set: "+formulaToString(i));
 			switch (sf.topChar(i)) {
 			case '&': set(sf.right(i)); 
 			case 'A': set(sf.left(i)); break;                            
@@ -184,7 +196,8 @@ public class JHue extends java.util.BitSet {
         //return JHueEnum.e.ft.getSubformulas()[f].toString();
     }
         public static String formulaToString(int f) {
-            return JHueEnum.e.ft.getSubformulas()[f].abbrev().toString();
+            // BUGGY: return JHueEnum.e.ft.getSubformulas()[f].abbrev().toString();
+        return JHueEnum.e.ft.getSubformulas()[f].toString();
             //return JHueEnum.e.ft.getSubformulas()[f].toString();
         } 
         

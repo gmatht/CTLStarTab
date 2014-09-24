@@ -13,8 +13,11 @@ public abstract class JBranch {
     int max_children = 0;
     private HashMap<Integer, JNode> satisfied_by = new HashMap<Integer, JNode>();
 
+    /* The direct subchild which satisfies the eventuality (not the final node) */
+    private HashMap<Integer, JNode> satisfied_by_D = new HashMap<Integer, JNode>();
     public void clear_eventualities () {
 	     satisfied_by = new HashMap<Integer, JNode>();
+	     satisfied_by_D = new HashMap<Integer, JNode>();
     }
 
 
@@ -47,7 +50,11 @@ public abstract class JBranch {
             if (satsifiedBy(f) == null) {
                 s+=comma+JHue.formulaToString(f)+":0";
             } else {
-                s+=comma+JHue.formulaToString(f)+":"+satsifiedBy(f).toString();
+		if (satsifiedBy_D(f)==null) {
+            		s+=comma+JHue.formulaToString(f)+":"+satsifiedBy(f).toString()+"/NULL";
+		} else {
+                	s+=comma+JHue.formulaToString(f)+":"+satsifiedBy(f).toString()+"/"+satsifiedBy_D(f).toString();
+		}
             }
             comma=", ";
         }
@@ -70,8 +77,29 @@ public abstract class JBranch {
             //update_eventuality0(f);
             JNode sat_by = satisfied_by.get(f);
             if (sat_by != null) {
-                if (sat_by.pruned) {
+		//TODO: I added the satsified_by_D(irect descendant) test long after
+		// I originally wrote this code. This fixed a bug with 
+		// -((((EXa)U(Xa)))>(((Xa)U(((EXEa)U(Xa)))))) appearing to be 
+		// satisfiable. However, is this enough?
+		// I think it should be since we can follow the pruning back.
+		// In any case I MUST port to JHBranch too, or the hue optimization will probably be incorrect.
+                if (sat_by.pruned || satisfied_by_D.get(f).pruned) {
                     return null;
+                }
+            }
+            return satisfied_by.get(f);
+        }
+    }
+
+    public JNode satsifiedBy_D(int f) {
+        if (JHueEnum.e.int2Hue(col.hues[0]).get(f)) {
+            return parent;
+        } else {
+            //update_eventuality0(f);
+            JNode sat_by = satisfied_by_D.get(f);
+            if (sat_by != null) {
+                if (sat_by.pruned) {
+                   // return null;
                 }
             }
             return satisfied_by.get(f);
@@ -81,8 +109,9 @@ public abstract class JBranch {
     protected boolean update_eventuality0(int f) {
         JNode sat_by = satisfied_by.get(f);
         if (sat_by != null) {
-            if (sat_by.pruned) {
+            if (sat_by.pruned || satisfied_by_D.get(f).pruned) {
                 satisfied_by.put(f, null);
+                satisfied_by_D.put(f, null);
                 return true;
             }
         }
@@ -93,9 +122,10 @@ public abstract class JBranch {
         boolean updated = false;
         JNode sat_by = satisfied_by.get(f);
         if (sat_by != null) {
-            if (sat_by.pruned) {
+            if (sat_by.pruned || satisfied_by_D.get(f).pruned) {
                 sat_by = null;
                 satisfied_by.put(f, null);
+                satisfied_by_D.put(f, null);
                 updated = true;
             }
         }
@@ -105,6 +135,8 @@ public abstract class JBranch {
                     sat_by = c.b.satsifiedBy(f);
                     if (sat_by != null) {
                         satisfied_by.put(f, sat_by);
+                	satisfied_by_D.put(f, c);
+		    	//JNode.out.println("SAT col.toString() + " Sat by D:" + c.toString() +" F:"+JHue.formulaToString(f)+":"+satsifiedBy(f).toString());
                         return true;
                     }
                 }
@@ -536,6 +568,7 @@ final class JBinaryBranch extends JDisjunctBranch {
         formula = f;
         hue_index = hi;
         col = c;
+	//JNode.out.println("Branch: "+r.topString()+" "+JHue 
     }
 
     public JNode addchild(int i) {

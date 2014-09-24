@@ -97,11 +97,12 @@
 
 	    
 
+	    public void go () {
+		    go (true);
+	    }
 	    
 
-	    public void go(){
-	    	
-	    	boolean usf=true;
+	    public void go(boolean usf){
 	    	int step=1;
 	    	int status=-1;
 	    	// >=0 means backtrack to that node

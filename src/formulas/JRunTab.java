@@ -12,18 +12,20 @@ import java.io.PrintWriter;
 public class JRunTab implements Runnable {
     String fs;
     Report r;
-    int type;
+    boolean log;
+    public enum Solver { BCTLOLD, BCTLNEW, CTL, RANDOM_TEST, BPATH, BPATHUE, BCTLHUE }
+    Solver type;
     public int status=3;
     public boolean quit_on_problem=false;
-    public static final int BCTLOLD=0;
-    public static final int BCTLNEW=1;
-    public static final int CTL=2;
-    public static final int RANDOM_TEST=3;
+    //public static final int BCTLOLD=0;
+    //public static final int BCTLNEW=1;
+    //public static final int CTL=2;
+    //public static final int RANDOM_TEST=3;
     long milliseconds;
     
     private static PrintStream out=System.out;
     
-    int type_BCTLOLD=0;
+    //int type_BCTLOLD=0;
     
     private static int addResult(int r, int s) {
     	if (s == 3) {
@@ -68,9 +70,9 @@ public class JRunTab implements Runnable {
     
     
     public static int TestBCTL(String f, PrintWriter out) {
-    	JRunTab o = new JRunTab(f,BCTLOLD);
-    	JRunTab n = new JRunTab(f,BCTLNEW);
-    	JRunTab h = new JRunTab(f,BCTLNEW);
+    	JRunTab o = new JRunTab(f,Solver.BCTLOLD);
+    	JRunTab n = new JRunTab(f,Solver.BCTLNEW);
+    	JRunTab h = new JRunTab(f,Solver.BCTLNEW);
     	int status;
 
        	System.out.println("!!!!!!!"+f);
@@ -113,29 +115,47 @@ public class JRunTab implements Runnable {
     	return status;
     }
     
-    public JRunTab(String fs, Report r, int type){
+    public JRunTab(String fs, Report r, Solver type){
+	    this(fs,r,type,false);
+    }
+    
+    public JRunTab(String fs, Report r, Solver type, boolean log){
         this.fs = fs;
         this.r = r;
         this.type = type;
+	this.log = log;
         
     }
     
 
-    public JRunTab(String fs, int type){
+    public JRunTab(String fs, Solver type){
         this(fs,new ReportToFile(new NullOutputStream()), type);   
     }
     
+    private void clear_jsettings () {
+	    // Some of this stuff should probably be integrated with the formulas/ package
+                JNode.use_hue_tableau = false;
+		JColour2.state_variables = true;
+    }
 
 	public void run() {
         //new BctlTab(fs,r);
         PrintWriter out = ((ReportToFile)r).pw;
         formulas.JNode.out=out;
         status=3;
+	clear_jsettings();
+	JNode.log = log;
         long time = java.util.Calendar.getInstance().getTimeInMillis();
         try {
         switch (type) {
-            case BCTLNEW: status = formulas.JBMain.go(fs); break;
-            case BCTLOLD: status = (new BctlTab(fs,r)).status; break;
+            case BPATHUE: JColour2.state_variables = false;
+            case BCTLHUE: JNode.use_hue_tableau = true;
+            case BCTLNEW: formulas.JBMain.go(fs); break;
+            case BPATH: JColour2.state_variables = false;
+            	        formulas.JBMain.go(fs); break;
+            case BCTLOLD: new BctlTab(fs,r); break;
+            //case BCTLNEW: status = formulas.JBMain.go(fs); break;
+            //case BCTLOLD: status = (new BctlTab(fs,r)).status; break;
             case CTL:    
                 out.println("The CTL* Button in this applet may not work in your"
                         + "browser. If so, try: "

@@ -60,6 +60,7 @@ public class Treeversal2 extends Canvas implements MouseListener {
 	    
 	    public Treeversal2(StarTab mst){
 	    	this.mst=mst;
+		try {
 	        JFrame frame = new JFrame();
 	        frame.setSize(width, depth);
                 try {
@@ -76,6 +77,9 @@ public class Treeversal2 extends Canvas implements MouseListener {
 	        frame.setSize(400,400);
 	        frame.setVisible(true);
 	        this.addMouseListener(this);
+		} catch (Exception e) {
+			
+		}
 	    }
 	    
 	    public Treeversal2(){

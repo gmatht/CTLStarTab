@@ -19,6 +19,7 @@ public class JColour2 {
     int hues[];
     int num_hues;
     static int max_num_hues_in_colour=0;
+    public static boolean state_variables = true; // Set this to false to use path variables
     boolean contradiction = false;
 //	JHueEnum he; //We don't really need a copy of this pointer in every colour.
     boolean pruned = false;
@@ -216,13 +217,13 @@ public class JColour2 {
                 for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
                     //System.out.format("%s",sf.topChar(f));
                     if (sf.topChar(f) == 'A' || //All paths
-                            (sf.topChar(f) >= 'a' && sf.topChar(f) <= 'z')) //variable
+                            (state_variables && sf.topChar(f) >= 'a' && sf.topChar(f) <= 'z')) //variable
                     {
                         Aformulas[f] = true;
                     }
                     if (sf.topChar(f) == '-') {
                         int leftc = (sf.topChar(sf.left(f)));
-                        if (leftc >= 'a' && leftc <= 'z') {
+                        if (state_variables && leftc >= 'a' && leftc <= 'z') {
                             Aformulas[f] = true;
                         }
                     }

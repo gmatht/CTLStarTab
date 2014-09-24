@@ -14,12 +14,43 @@
 //package javaapplication1;
 import formulas.*;
 import java.io.PrintWriter;
+import java.io.IOException;
+import formulas.JRunTab.Solver;
 /**
  *
  * @author john
  */
 public class JApplet extends javax.swing.JApplet {
 
+    public static void main (String[] args) {
+
+	System.out.format ("Num Args: %s\n", args.length);
+	String formula;
+	String outfile="default.out";
+	Solver logic = Solver.BCTLNEW;
+	ReportToFile r;
+
+	switch (args.length) {
+		case 3: outfile = args[2];
+		case 2: logic = Solver.valueOf(args[1]);
+		case 1:	formula = args[0];
+			r = new ReportToFile(outfile);
+			r.pw.append(formula+"\t"+logic+"\n");
+			if (outfile.contains ("VERB")) {
+				JNode.log = true;
+			} else {
+			     r.pw = new PrintWriter(new MyFilterWriter(r.pw));
+			}
+
+
+        	(new JRunTab(formula, r, logic, outfile.contains ("VERB"))).run();
+		break;
+		default:
+		System.out.println("Usage: java JApplet formula [BCTLNEW|BCTLOLD|CTL] outputfile\n");
+	} 
+
+	    
+    }
     /** Initializes the applet JApplet */
     public void init() {
         try {
@@ -92,18 +123,14 @@ public class JApplet extends javax.swing.JApplet {
         HueBCTLButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
             	cleanUp();
-                JNode.log=false;
-                JNode.use_hue_tableau = true;
-                activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.BCTLNEW));
+                activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), Solver.BCTLHUE, false));
         	activeThread.start();
             }//GEN-LAST:event_BCTLButtonMouseClicked
         });
         TestBCTLButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
             	cleanUp();
-                JNode.log=false;
-                JNode.use_hue_tableau = false;
-                activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.RANDOM_TEST));
+                activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), Solver.RANDOM_TEST, false));
         	activeThread.start();
             }//GEN-LAST:event_BCTLButtonMouseClicked
         });
@@ -168,8 +195,7 @@ public class JApplet extends javax.swing.JApplet {
      private void OldBCTLButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BCTLButtonMouseClicked
 	cleanUp();
 
-        JNode.use_hue_tableau = false;
-        activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.BCTLOLD));
+        activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), Solver.BCTLOLD));
 	activeThread.start();
     }    
      
@@ -177,16 +203,13 @@ public class JApplet extends javax.swing.JApplet {
      private void LogBCTLButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BCTLButtonMouseClicked
 	cleanUp();
 
-        JNode.use_hue_tableau = false;
-        JNode.log=true;
-        activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.BCTLNEW));
+        activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.Solver.BCTLNEW, true));
 	activeThread.start();
     }
 
     private void NewBCTLButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BCTLButtonMouseClicked
 	cleanUp();
-        JNode.log=false;
-        activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.BCTLNEW));
+        activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.Solver.BCTLNEW));
 	activeThread.start();
     }//GEN-LAST:event_BCTLButtonMouseClicked
 
@@ -212,7 +235,7 @@ public class JApplet extends javax.swing.JApplet {
 	if (activeThread != null) {
 		activeThread.interrupt();
 	}*/
-		activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.CTL));
+	activeThread = new Thread(new JRunTab(FormulaTextField.getText(), report(), JRunTab.Solver.CTL));
 	activeThread.start();
     }//GEN-LAST:event_CTLButtonActionPerformed
 
@@ -237,20 +260,24 @@ public class JApplet extends javax.swing.JApplet {
 
 }
 
-/*class RunTab implements Runnable {
+//enum Solver { BCTLOLD, BCTLNEW, CTL }
+/* Obsolete: use JRunTab instead
+class RunTab implements Runnable {
     String fs;
     Report r;
-    int type;
-    static final int BCTLOLD=0;
-    static final int BCTLNEW=1;
-    static final int CTL=2;
+    //int type;
+    Solver type;
+    boolean log;
+    //static final int BCTLOLD=0;
+    //static final int BCTLNEW=1;
+    //static final int CTL=2;
     
-    int type_BCTLOLD=0;
-    
-    public RunTab(String fs, Report r, int type){
+    //int type_BCTLOLD=0;
+    public RunTab(String fs, Report r, Solver type, boolean log){
         this.fs = fs;
         this.r = r;
         this.type = type;
+	this.log = log;
         
     }
     public void run() {
@@ -259,17 +286,25 @@ public class JApplet extends javax.swing.JApplet {
         formulas.JNode.out=out;        
         long time = java.util.Calendar.getInstance().getTimeInMillis();
         try {
+	System.out.println("Ready to Run Tableau\n");
+	clear_jsettings();
+	JNode.log = log;
         switch (type) {
+            case BPATHUE: JColour2.state_variables = false;
+            case BCTLHUE: JNode.use_hue_tableau = false;
             case BCTLNEW: formulas.JBMain.go(fs); break;
+            case BPATH: JColour2.state_variables = false;
+            	        formulas.JBMain.go(fs); break;
             case BCTLOLD: new BctlTab(fs,r); break;
             case CTL:    
                 out.println("The CTL* Button in this applet may not work in your"
                         + "browser. If so, try: "
                         + "http://www.csse.uwa.edu.au/~mark/research/Online/startab/Stapplet.html");
-                new StarTab(fs,r).go(); break;
+                new StarTab(fs,r).go(false); break;
             default: throw (new RuntimeException("Unknown Tableau Type"));
 
         }
+	System.out.println("Finished Tableau\n");
 //                Thread.sleep(400);
         } catch (Exception e) {
             e.printStackTrace(out);
@@ -281,6 +316,66 @@ public class JApplet extends javax.swing.JApplet {
         
         out.flush();
     }
+}
+*/
+
+//class MyFilterWriter extends java.io.FilterWriter {
+class MyFilterWriter extends java.io.Writer {
+	int numlines=0;
+	int maxlines=10;
+	boolean need_newline = false;
+	java.io.Writer w;
+
+	public MyFilterWriter (java.io.Writer p) {
+		super(p);
+		w=p;
+	}
+
+	private boolean should_print ( String s ) {
+		if (s.contains("---SUMMARY---")) { numlines =-100; };
+		return ( numlines < maxlines || s.contains("satisf"));
+		//return ( numlines < maxlines || s.contains("satisf"));
+	}
+
+	public void write(String s) throws IOException {
+		if (should_print(s)) {
+			w.write(s);
+			if (s.contains("\n")) {
+				if (numlines==(maxlines-1)) w.write("...\n");
+				numlines++;
+				need_newline=false;
+			} else {
+				need_newline=true;
+			}
+
+		} else {
+			if (need_newline) w.write('\n');
+			need_newline = false;
+		}
+	}
+
+	public void write(char[] cbuf, int off, int len) throws IOException {
+		String s = new String(cbuf, off, len);
+		this.write(s);
+	}
+
+	public void close() throws IOException { w.close(); }
+	public void flush() throws IOException { w.flush(); }
+/*
+	public void write(String s, int off, int len) throws IOException {
+		this.write(s.toCharArray(),off,len);
+		//this.write(s.substring(off,off+len+1));
+	}
+  	
+	public void write(int c) throws IOException {
+		this.write(String.valueOf((char) c));
+	}*/
+		/*
+  	public void write(String s, int offset, int length) throws IOException {
+	public void write
+	*/
+
+
 }
 /*
 

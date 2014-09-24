@@ -272,6 +272,8 @@ public class JBMain implements Runnable {
                 JNode.out.println("Types differ, but they equal?");
             }
 
+	    JNode.out.format("---SUMMARY---\n");
+	    //JNode.outputStatus(0,"");
             //if (node.complete()) {
             if (!node.pruned) {
         	satisfiable = true;
