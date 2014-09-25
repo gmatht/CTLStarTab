@@ -422,6 +422,20 @@ public class JNode {
         return complete;
     }
 
+    // Print out the whole tableau at end.
+    public void log_graph(){
+	log_graph_(0,"",new HashSet<JNode>());
+    }
+    public void log_graph_(int depth, String reason,HashSet<JNode> logged)
+{
+ if (!pruned && !logged.contains(this)) {
+	logged.add(this);
+	out.println(log_line(depth, "", reason));
+	for (JNode c : b.eChildren()) {
+		c.log_graph_(depth+1,reason,logged);
+	}
+ }
+}
             
     public static void outputStatus(int depth, String p) {
                 out.format("Nodes: %d=%d+%d Current Depth: %d\n ", num_nodes, col2node.size(), col2nodeX.size(),depth);
