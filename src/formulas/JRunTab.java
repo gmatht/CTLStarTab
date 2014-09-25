@@ -150,12 +150,12 @@ public class JRunTab implements Runnable {
         switch (type) {
             case BPATHUE: JColour2.state_variables = false;
             case BCTLHUE: JNode.use_hue_tableau = true;
-            case BCTLNEW: formulas.JBMain.go(fs); break;
+            case BCTLNEW: status=formulas.JBMain.go(fs); break;
             case BPATH: JColour2.state_variables = false;
-            	        formulas.JBMain.go(fs); break;
-            case BCTLOLD: new BctlTab(fs,r); break;
+            	        status=formulas.JBMain.go(fs); break;
+            //case BCTLOLD: new BctlTab(fs,r); break;
             //case BCTLNEW: status = formulas.JBMain.go(fs); break;
-            //case BCTLOLD: status = (new BctlTab(fs,r)).status; break;
+            case BCTLOLD: status = (new BctlTab(fs,r)).status; break;
             case CTL:    
                 out.println("The CTL* Button in this applet may not work in your"
                         + "browser. If so, try: "
@@ -167,7 +167,7 @@ public class JRunTab implements Runnable {
             			"Results: 0:Unsatisfiable, 1:Satisfiable, 2: Exception, 3:Timeout, 4:Decision Procedures Disagree!" +
             			'\n'+
             			"In the unlikely event you find a formula where the decision producedures disagree, report it to: " +
-            			'\n'+"john@csse.uwa.edu.au" + '\n'); 
+            			'\n'+"john.mccabe-dansted@uwa.edu.au" + '\n'); 
             	TestBCTL(2,fs.length(),out); break;
             default: throw (new RuntimeException("Unknown Tableau Type"));
 
