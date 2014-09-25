@@ -75,7 +75,7 @@ public class JHue extends java.util.BitSet {
 		}
 		
 		if (!get(i)) {
-			JNode.out.println("set: "+formulaToString(i));
+			if (JNode.log) JNode.out.println("set: "+formulaToString(i));
 			switch (sf.topChar(i)) {
 			case '&': set(sf.right(i)); 
 			case 'A': set(sf.left(i)); break;                            
