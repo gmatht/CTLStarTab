@@ -141,11 +141,50 @@ public class JBMain implements Runnable {
     }
 
 
+    /* Check that no eventualities are missing */
+
+    public static void redo_eventualities(JNode node) {
+
+		long time_wasted=0;
+                if (JNode.isTableauComplete()) {
+                    long time = java.util.Calendar.getInstance().getTimeInMillis();
+
+		    // I have not been able to prove the the chain of eventualities does not get broken,
+		    // So clear all eventualities and re-build before finishing.
+                    for (JNode n :  JNode.col2node.values()) { if (n.b != null) { n.b.clear_eventualities(); } }
+                    for (JNode n : JNode.col2nodeX.values()) { if (n.b != null) { n.b.clear_eventualities(); } }
+		    JNode.out.println("Post clear");
+			node.log_graph();
+		    JNode.out.println("");
+                    for (JNode n :  JNode.col2node.values()) { if (n.b != null) { n.b.update_eventualities(); } }
+                    for (JNode n : JNode.col2nodeX.values()) { if (n.b != null) { n.b.update_eventualities(); } }
+		    JNode.out.println("Post update");
+			node.log_graph();
+		    JNode.out.println("");
+
+                    for (JNode n : JNode.col2node.values()) {
+                        n.updateStatus();                        
+                    }
+                    for (JNode n : JNode.col2nodeX.values()) {
+                        n.updateStatus();
+                    }
+                    //if ((!JNode.uncovered.isEmpty()) || (!JNode.unfulfilled.isEmpty())) {
+                    if ((!JNode.isTableauComplete())) {
+                        long time2 = java.util.Calendar.getInstance().getTimeInMillis();
+                        time_wasted += (time2 - time);
+                        JNode.out.println("Harmless bug: Lists of unfinished nodes incomplete, fixed with brute force (Wasted " + time_wasted + "ms)");
+                        //One cause of this could be update_eventualities not calling updateStatus()
+                    }
+                }
+	}
+
+
     public static int go(String input) {
         Logic logic = new AUXLogic();
         boolean problem_occured = false;
         int ret_status=3;
         boolean satisfiable;
+         JNode.out.println("\nDEBUG1");
 
         try {
             JNode.static_reset();
@@ -163,8 +202,10 @@ public class JBMain implements Runnable {
             c.normalise();
             JNode node = JNode.getNode(c);
 
-            node.complete();
             long time_wasted = 0;
+         	JNode.out.println("\nDEBUG2");
+            node.complete();
+            redo_eventualities(node);
             while (!JNode.isTableauComplete()) {
                 LinkedList<JNode> S = new LinkedList<JNode>(JNode.unfulfilled);
                 JNode.out.println("\nFulfilling Nodes (" + S.size() + ")");
@@ -187,15 +228,22 @@ public class JBMain implements Runnable {
                 }
                 //if ((JNode.uncovered.isEmpty()) && (JNode.unfulfilled.isEmpty())){
                 //We should remove these from the final version
-                if (JNode.isTableauComplete()) {
+                redo_eventualities(node);
+                /*if (JNode.isTableauComplete()) {
                     long time = java.util.Calendar.getInstance().getTimeInMillis();
 
 		    // I have not been able to prove the the chain of eventualities does not get broken,
 		    // So clear all eventualities and re-build before finishing.
                     for (JNode n :  JNode.col2node.values()) { if (n.b != null) { n.b.clear_eventualities(); } }
                     for (JNode n : JNode.col2nodeX.values()) { if (n.b != null) { n.b.clear_eventualities(); } }
+		    JNode.out.println("Post clear");
+			node.log_graph();
+		    JNode.out.println("");
                     for (JNode n :  JNode.col2node.values()) { if (n.b != null) { n.b.update_eventualities(); } }
                     for (JNode n : JNode.col2nodeX.values()) { if (n.b != null) { n.b.update_eventualities(); } }
+		    JNode.out.println("Post update");
+			node.log_graph();
+		    JNode.out.println("");
 
                     for (JNode n : JNode.col2node.values()) {
                         n.updateStatus();                        
@@ -211,6 +259,12 @@ public class JBMain implements Runnable {
                         //One cause of this could be update_eventualities not calling updateStatus()
                     }
                 }
+
+            	if (JNode.isTableauComplete()) {
+			JNode.out.println("FINAL RUN (Just for output)");
+			node.log_graph();
+		}
+*/
                 //}
             }
 
@@ -264,6 +318,8 @@ public class JBMain implements Runnable {
                 JNode.out.println("NOT COMPLETE???");
 		    problem_occured=true;
             } else {
+                JNode.out.println("FINALE COMPLETE.");
+		node.log_graph();
                 JNode.out.println("COMPLETE.");
             }
             
