@@ -17,6 +17,8 @@ public class JColour2 {
     boolean isNormalised=false; // for test purposes only.
     
     int hues[];
+    int state_hue=-1;
+    int state_E=-1;
     int num_hues;
     static int max_num_hues_in_colour=0;
     public static boolean state_variables = true; // Set this to false to use path variables
@@ -49,11 +51,36 @@ public class JColour2 {
     		}
         }
      }
-    
+
+    public JColour2(JHueEnum e, Subformulas sf) {
+            JHue h = new JHue(sf);
+            num_hues = 1;
+            hues = new int[1];
+	    if (JNode.use_no_star) {
+            	//JHue sh = new JStateHue(sf);
+            	JHue sh = new JHue(true,sf);
+		//phi is the largest subformula of phi, hence (0) is phi
+		if (sf.state_formula(0)) {
+		    	//system.out.println("phi IS state-formula);
+			sh.set(0);
+		} else {
+		        h.set(0);
+		}
+		state_hue=JHueEnum.e.hue2Int(sh);
+		assert(state_hue>=0);
+	    } else {
+		h.set(0);
+	    }
+	    hues[0]=JHueEnum.e.hue2Int(h);
+            normalise();
+
+    }
+
     public JColour2(JHueEnum e, int h) {
         num_hues = 1;
         hues = new int[1];
         hues[0] = h;
+	assert(!JNode.use_no_star);
     }
 
     public JColour2(JHueEnum e, int h, int h2) {
@@ -61,6 +88,7 @@ public class JColour2 {
         hues = new int[2];
         hues[0] = h;
         hues[1] = h2;
+	assert(!JNode.use_no_star);
     }
 
     public String toString() {
@@ -69,7 +97,13 @@ public class JColour2 {
 
         JHueEnum he = JHueEnum.e;
         //String s="C:{" + Integer.toString(hues[0]);
-        String s = "C:{" + he.toString(hues[0]);
+        String s="C:";
+	if (JNode.use_no_star) {
+	    	assert(state_hue>=0);
+		if (state_hue>=0) s = s + " [" + he.toString(state_hue) + "] ";
+		else s = s + " [?] ";
+	}
+	s = s + "{" + he.toString(hues[0]);
         for (int i = 1; i < num_hues; i++) {
             if (JNode.use_optional_hues) {
             	if (JHueEnum.e.isEssential(hues[i])) {
@@ -87,6 +121,8 @@ public class JColour2 {
 
     public JColour2(JColour2 c) {
         num_hues = c.num_hues;
+	state_hue = c.state_hue;
+	state_E = c.state_E;
         hues = (int[]) c.hues.clone();
 //		he=c.he;
     }
@@ -114,16 +150,19 @@ public class JColour2 {
         /*                if (c.he == null) {
         throw new RuntimeException();
         }*/
-        num_hues = bi.bitCount() + 1;
+	int i0=1; if (state_E >= 0) i0=0;
+        num_hues = bi.bitCount() + i0;
         hues = new int[num_hues];
-//		he=c.he;
-        int ch0 = c.hues[0];
-        int Xch0 = JHueEnum.e.temporalSuccessor(ch0);
-        hues[0] = Xch0;
+	JHueEnum e=JHueEnum.e;
+	if (JNode.use_no_star) {
+		state_hue=e.temporalSuccessor(c.state_hue);
+		if (state_E >=0) state_hue = e.addFormula2Hue(state_E, state_hue);
+	}
+	if (i0>0) hues[0]   = e.temporalSuccessor(c.hues[0]);
         //hues[0]=he.temporalSuccessor(c.hues[0]);
-        int j = 1;
-        for (int i = 1; i < c.num_hues; i++) {
-            if (bi.testBit(i - 1)) {
+        int j = i0;
+        for (int i = i0; i < c.num_hues; i++) {
+            if (bi.testBit(i - i0)) {
                 //System.out.println(">>>"+JHueEnum.e.toString(c.hues[i]));
                 hues[j] = JHueEnum.e.temporalSuccessor(c.hues[i]);
                 j++;
@@ -133,6 +172,8 @@ public class JColour2 {
     }
 
 //    public JColour2(JColour2 c, int h, boolean essential) {
+
+	// Creates a Colour with a new hue h
         public JColour2(JColour2 c, int h) {
         num_hues = c.num_hues + 1;
         hues = (new int[num_hues]);
@@ -196,10 +237,14 @@ public class JColour2 {
     	assertNotLocked();
         //System.out.format("Norm A %s \n",toString());
         JHueEnum he = JHueEnum.e;
+
+        if (state_hue == 0) {
+                contradiction = true; return;
+	}
+	
         for (int j = 0; j < num_hues; j++) {
             if (hues[j] == 0) {
-                contradiction = true;
-                return;
+                contradiction = true; return;
             }
         }
 
@@ -216,7 +261,7 @@ public class JColour2 {
                 JHue h = he.int2Hue(hues[i]);
                 for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
                     //System.out.format("%s",sf.topChar(f));
-                    if (sf.topChar(f) == 'A' || //All paths
+                    /*if (sf.topChar(f) == 'A' || //All paths
                             (state_variables && sf.topChar(f) >= 'a' && sf.topChar(f) <= 'z')) //variable
                     {
                         Aformulas[f] = true;
@@ -226,14 +271,22 @@ public class JColour2 {
                         if (state_variables && leftc >= 'a' && leftc <= 'z') {
                             Aformulas[f] = true;
                         }
-                    }
+                    }*/
+		    if (sf.state_formula(f)) Aformulas[f] =true;
                 }
             }
+	    if (JNode.use_no_star) {
+		JHue h = he.int2Hue(state_hue);
+		for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
+			if (sf.state_formula(f)) Aformulas[f] =true;
+		}
+	    }
             for (int f = 0; f < num_subformulas; f++) {
                 if (Aformulas[f]) {
                     for (int j = 0; j < num_hues; j++) {
                         hues[j] = he.addFormula2Hue(f, hues[j]);
                     }
+		    if (JNode.use_no_star) state_hue=he.addFormula2Hue(f, state_hue);
                 }
             }
             for (int j = 0; j < num_hues; j++) {
@@ -273,7 +326,17 @@ public class JColour2 {
     }
 
     public java.util.ArrayList<Integer> getEventualities() {
-        return JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	Subformulas sf = JHueEnum.e.sf;
+	if (state_E < 0) {
+	        return JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	} else {
+		java.util.ArrayList<Integer> se = new java.util.ArrayList<Integer>(1);
+		if ("YI".indexOf(sf.topChar(state_E))>1) {
+			se.add(state_E);
+		}
+		return se;
+	}
+	
     }
 
     public boolean hasContradiction() {

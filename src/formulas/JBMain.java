@@ -196,9 +196,10 @@ public class JBMain implements Runnable {
             }*/
             JHueEnum he = new JHueEnum(sf, ft);
             JHueEnum.e = he;
-            JHue h = new JHue(sf);
-            h.set(0);
-            JColour2 c = new JColour2(he, he.hue2Int(h), 1);
+            //JHue h = new JHue(sf);
+            //h.set(0);
+            //JColour2 c = new JColour2(he, he.hue2Int(h), 1);
+            JColour2 c = new JColour2(he, sf);
             c.normalise();
             JNode node = JNode.getNode(c);
 

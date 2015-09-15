@@ -268,6 +268,9 @@ final class JE extends JDisjunctBranch {
     public JE(JColour2 c, int f) {
         col = c;
         max_children = c.num_hues;
+	if (JNode.use_no_star) {
+		assert false;
+	}	
         //System.out.format("dE\n");
         E_formula = f;
     }
@@ -346,7 +349,7 @@ final class JE extends JDisjunctBranch {
  */
 final class JChooseHue extends JBranch {
 
-    int E_formula; // The formula that must exist in some hue;
+    //int E_formula; // The formula that must exist in some hue;
     HashMap<Integer, JNode> satisfied_by = new HashMap<Integer, JNode>();
 
     @Override
@@ -362,13 +365,16 @@ final class JChooseHue extends JBranch {
     public JChooseHue(JColour2 c) {
         col = c;
         max_children = c.num_hues;
+	if (JNode.use_no_star) {
+		max_children += (JHueEnum.e.int2Hue(c.state_hue)).get_E_nostar().size();
+	}
     }
 
     public static JChooseHue create(JColour2 c) {
         return new JChooseHue(c);
     }
 
-    public boolean eIsFull() {
+    public boolean eIsFull() { 
         return (num_children_created() > 0);
     }
 
@@ -387,7 +393,12 @@ final class JChooseHue extends JBranch {
         }
         JColour2 c = new JColour2(col);
         int n = num_children_created();
-        c.setFirstHue(n);
+	if (n >= c.num_hues) {
+		c.state_E = (JHueEnum.e.int2Hue(c.state_hue)).get_E_nostar().get(n-col.num_hues);
+	} else {
+		c.state_E = -1;
+		c.setFirstHue(n);
+	}
         c.normalise();
         JNode node = JNode.getNodeX(c, this); //Can't re-use node here as we have to know whether we are JChooseHue or a TemporalSuccessor
         //JNode node=JNode.getNode(c);
@@ -452,7 +463,8 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             //  Then we will make sure we throw an exception before we reach MAXINT.
             max_children=Integer.MAX_VALUE;
         } else {
-            max_children = 1 << (c.num_hues - 1);
+	    if (c.state_E > -1) max_children = 1 << (c.num_hues - 1);
+            else                max_children = 1 << (c.num_hues    );
         }
     }
 

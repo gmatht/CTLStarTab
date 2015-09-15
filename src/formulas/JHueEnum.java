@@ -83,6 +83,7 @@ public class JHueEnum {
 		if (h==0) {
 			return "FALSE";
 		}
+		assert(h>=0);
 		JHue jh=int2hue.get(h);
 		if (jh==null) {
 			System.out.format("NULL %s\n",h);

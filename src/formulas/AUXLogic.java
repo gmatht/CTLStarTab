@@ -5,10 +5,10 @@
  */
 
 package formulas;
-
 /**
  *
  * @author  mark
+ *  Some modifications by John to and B Y I operators
  */
 public class AUXLogic implements Logic {
     
@@ -22,9 +22,10 @@ public class AUXLogic implements Logic {
     }
     
     public FormulaTree disabbreviate(FormulaTree f) {
-        if ((f.topChar()>='a') && (f.topChar()<='z')) return f;
+	char c = f.topChar();
+        if ((c>='a') && (c<='z')) return f;
         
-        switch (f.topChar()){
+        switch (c){
             case '0':
                 return new FormulaTree('-',
                            new FormulaTree('1'));
@@ -71,10 +72,10 @@ public class AUXLogic implements Logic {
                                     disabbreviate(f.leftSubtree()))));
             case 'X':
                 return new FormulaTree('X',disabbreviate(f.leftSubtree()));
-            case 'U':
-                return new FormulaTree('U',disabbreviate(f.leftSubtree()),disabbreviate(f.rightSubtree())); 
-            case 'A':
-                return new FormulaTree('A',disabbreviate(f.leftSubtree()));
+            case 'U': case 'Y': case 'I':
+                return new FormulaTree(c,disabbreviate(f.leftSubtree()),disabbreviate(f.rightSubtree())); 
+            case 'A': case 'B':
+                return new FormulaTree(c,disabbreviate(f.leftSubtree()));
             case 'E':
                 return new FormulaTree('-',
                         new FormulaTree('A',
@@ -141,13 +142,13 @@ public class AUXLogic implements Logic {
    
    public boolean isUnary(char c){
        if ((c=='-') || 
-       (c=='F') || (c=='P') || (c=='G') || (c=='H') || (c=='X') ||
+       (c=='F') || (c=='P') || (c=='G') || (c=='H') || (c=='X') || (c=='B') ||
        (c=='E') || (c=='A')) return true;
         return false;
     }
    
    public boolean isBinaryInfix(char c){
-       return ("&|><=U".indexOf(c)!=-1);
+       return ("&|><=UYI".indexOf(c)!=-1);
     }
     
    //assumes both from same closure
@@ -219,7 +220,8 @@ public class AUXLogic implements Logic {
     }//end unfullfilled
     
     public FormulaTree abbreviate(FormulaTree f) {
-        if ((f.topChar()>='a') && (f.topChar()<='z')) return f;
+	char c=f.topChar();
+        if ((c>='a') && (c<='z')) return f;
         
         switch (f.topChar()){
 
@@ -231,7 +233,8 @@ public class AUXLogic implements Logic {
             	
             	switch (g.topChar()){
             		case '1': return new FormulaTree('0');
-            		case '-': return new FormulaTree('-',abbreviate(g));
+            		case '-': return new FormulaTree('-',abbreviate(g)); // why not just abbreviate(g)?
+            		case 'Y': case 'I': return new FormulaTree('-',abbreviate(g));
             		case '&': {
             			FormulaTree h1=g.leftSubtree();
             			FormulaTree h2=g.rightSubtree();
@@ -242,7 +245,7 @@ public class AUXLogic implements Logic {
             			}
             			return new FormulaTree('-',abbreviate(f.leftSubtree()));
 	            	}
-            		case 'X': return new FormulaTree('-',abbreviate(g));
+            		case 'X': case 'B': return new FormulaTree(c,abbreviate(g));
             		case 'U': {
             			if ((g.leftSubtree().topChar()=='1') && (g.rightSubtree().topChar()=='-')){
             				return new FormulaTree('G',abbreviate(g.rightSubtree().leftSubtree()));
@@ -261,8 +264,10 @@ public class AUXLogic implements Logic {
             	return new FormulaTree('&',abbreviate(f.leftSubtree()),abbreviate(f.rightSubtree()));
 
 
-            case 'X':
-            	return new FormulaTree('X',abbreviate(f.leftSubtree()));
+            case 'X': case 'B':
+            	return new FormulaTree(c,abbreviate(f.leftSubtree()));
+            case 'Y': case 'I':
+            	return new FormulaTree(c,abbreviate(f.leftSubtree()),abbreviate(f.rightSubtree()));
             case 'U':{
             	FormulaTree g=f.leftSubtree();
             	if ((g.topChar()>='1')) return new FormulaTree('F',abbreviate(f.rightSubtree()));	
