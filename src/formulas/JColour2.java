@@ -155,7 +155,9 @@ public class JColour2 {
         hues = new int[num_hues];
 	JHueEnum e=JHueEnum.e;
 	if (JNode.use_no_star) {
+		JNode.out.println("AA: "+ e.toString(c.state_hue));
 		state_hue=e.temporalSuccessor(c.state_hue);
+		JNode.out.println("AB: "+ e.toString(state_hue));
 		if (state_E >=0) state_hue = e.addFormula2Hue(state_E, state_hue);
 	}
 	if (i0>0) hues[0]   = e.temporalSuccessor(c.hues[0]);
@@ -195,9 +197,15 @@ public class JColour2 {
      */
     public void assert_formula(int index_of_hue, int f) {
         JHueEnum he = JHueEnum.e;
-        int h = hues[index_of_hue];
-        int h_plus_f = he.addFormula2Hue(f, h);
-        hues[index_of_hue] = h_plus_f;
+	if (index_of_hue==-1) {
+		JNode.out.println(he.toString(state_hue) + " a-> " +he.toString(he.addFormula2Hue(f, state_hue)));
+		state_hue=he.addFormula2Hue(f, state_hue);
+		JNode.out.println(he.toString(state_hue) + " -<a");
+	} else {
+	        int h = hues[index_of_hue];
+        	int h_plus_f = he.addFormula2Hue(f, h);
+	        hues[index_of_hue] = h_plus_f;
+	}
     }
 
     /**
@@ -348,7 +356,7 @@ public class JColour2 {
             throw new RuntimeException();
         }
         JColour2 c = (JColour2) o;
-        return java.util.Arrays.equals(hues, (c.hues));
+        return java.util.Arrays.equals(hues, (c.hues)) && state_hue == c.state_hue;
     }
     
     private int hashCode_() {

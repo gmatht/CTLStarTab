@@ -107,7 +107,7 @@ public class Subformulas {
 	        state_formula[i]=state_formula_(i);
 		path_sensitive[i]=(!state_formula[i]);
 	   	if (state_formula[i]) {
-	   	System.out.println("SF: "+topChar[i]);
+	   	System.out.print(" SF: "+topChar[i]);
 	   	} else System.out.println("XXXXX: "+topChar[i]);
 	}
 	for(int j=0;j<len;j++){ //so it converges

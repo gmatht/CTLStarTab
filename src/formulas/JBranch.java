@@ -164,7 +164,9 @@ public abstract class JBranch {
         return updated;
     }
     ArrayList<JNode> children = new ArrayList<JNode>();
-    static JBinaryRule or_rule = new JOrRule(), until_rule = new JUntilRule(), not_until_rule = new JNotUntilRule();
+    static JBinaryRule or_rule = new JOrRule(), until_rule = new JUntilRule("U"), not_until_rule = new JNotUntilRule("U");
+    static JBinaryRule Y_rule = new JUntilRule("Y"), not_Y_rule = new JNotUntilRule("Y");
+    static JBinaryRule I_rule = new JUntilRule("I"), not_I_rule = new JNotUntilRule("I");
 
     public abstract JNode addchild();
 
@@ -210,27 +212,19 @@ public abstract class JBranch {
         }
         //System.out.println(c.toString());
         //ret = Jor.create(c); if (ret != null) return ret;
-        ret = JBinaryBranch.create(c, or_rule);
-        if (ret != null) {
-            return ret;
-        }
+	if (JNode.use_no_star) {
+        	ret = JBinaryBranch.create(c, -1, or_rule); if (ret != null) return ret;
+        	ret = JBinaryBranch.create(c, -1, Y_rule); if (ret != null) return ret;
+        	ret = JBinaryBranch.create(c, -1, I_rule); if (ret != null) return ret;
+        	ret = JBinaryBranch.create(c, -1, not_I_rule); if (ret != null) return ret;
+        	ret = JBinaryBranch.create(c, -1, not_Y_rule); if (ret != null) return ret;
+	}
+        ret = JBinaryBranch.create(c, or_rule); if (ret != null) return ret;
         c.check();
-        ret = JBinaryBranch.create(c, until_rule);
-        if (ret != null) {
-            return ret;
-        }
-        ret = JBinaryBranch.create(c, not_until_rule);
-        if (ret != null) {
-            return ret;
-        }
-        ret = JE.create(c);
-        if (ret != null) {
-            return ret;
-        }
+        ret = JBinaryBranch.create(c, until_rule); if (ret != null) return ret;
+        ret = JBinaryBranch.create(c, not_until_rule); if (ret != null) return ret;
+        ret = JE.create(c); if (ret != null) return ret;
         ret = JChooseHue.create(c);
-        if (ret != null) {
-            return ret;
-        }
         return ret;
     }
 }
@@ -524,8 +518,10 @@ final class JOrRule extends JBinaryRule {
 
 final class JUntilRule extends JBinaryRule {
 
+    private String topstring="U";
+
     public String topString() {
-        return "U";
+        return topstring;
     }
         public int left_choice(int f) {
             int ret = sf().right(f);
@@ -541,21 +537,24 @@ final class JUntilRule extends JBinaryRule {
             //if (ret < 0) throw new RuntimeException("Until Left Choice == -1");
             return ret;
     }
+
+    JUntilRule(String ts) {topstring=ts;}
 ; // May not be efficient
 }
 
 final class JNotUntilRule extends JBinaryRule {
+    private String topstring="U-";
+
+    JNotUntilRule(String ts) {topstring=ts+"-";}
 
     public String topString() {
-        return "U-";
+        return topstring;
     }
 
-    ;
         public int left_choice(int f) {
         return sf().negn(sf().left(f));
     }
 
-    ;
         public int right_choice(int f) {
         return sf().left(f);
     }
@@ -580,6 +579,7 @@ final class JBinaryBranch extends JDisjunctBranch {
         formula = f;
         hue_index = hi;
         col = c;
+	if (hi == -1) {max_children=2;}
 	//JNode.out.println("Branch: "+r.topString()+" "+JHue 
     }
 
@@ -634,6 +634,39 @@ final class JBinaryBranch extends JDisjunctBranch {
 
     }
 
+    public static JBinaryBranch create(JColour2 c, int i, JBinaryRule r) {
+        if (c == null) {
+            throw new NullPointerException();
+        }
+        if (c.hasContradiction()) {
+            return null;
+        }
+        c.check();
+	assert(i==-1);
+        //System.out.println(c.toString());
+        int num_hues = c.num_hues;
+        JHueEnum he = JHueEnum.e;
+        Subformulas sf = he.sf;
+        //for (int i = 0; i < num_hues; i++) {
+            JHue h = he.int2Hue(c.state_hue);
+            //int num_subformulas=c.he.sf.count();
+            for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
+                int subf = sf.followString(f, r.topString());
+                //System.out.println(sf.topChar(f));
+                if (subf >= 0) {
+                    if (h.get(r.left_choice(subf)) || h.get(r.right_choice(subf))) {
+                        //System.out.println("Jor already sat.");
+                        // already satisfied
+                    } else {
+                        //System.out.format("Jor %s,%d\n",c.toString(),left);
+                        return new JBinaryBranch(c, r, subf, i);
+                    }
+                }
+            }
+
+        //}
+        return null;
+    }
     public static JBinaryBranch create(JColour2 c, JBinaryRule r) {
         if (c == null) {
             throw new NullPointerException();

@@ -196,10 +196,10 @@ public class JHue extends java.util.BitSet {
         }
 
 	public JHue temporalSuccessor(int i) {
-		if(statehue) {
-			assert(JNode.use_no_star);
-		} //else {
-			JHue succ=new JHue(this.sf);
+		//if(statehue) {
+		//	assert(JNode.use_no_star);
+		//} //else {
+			JHue succ=new JHue(statehue,this.sf);
 			for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1)) {
 				int t=j;
 				//if(statehue) {
@@ -223,6 +223,7 @@ public class JHue extends java.util.BitSet {
 				}
 			}
 		//}
+		JNode.out.println(this.toString() + " X-> " + succ.toString() );
 		return succ;
 	}
 

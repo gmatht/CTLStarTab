@@ -186,6 +186,10 @@ public class JBMain implements Runnable {
         boolean satisfiable;
          JNode.out.println("\nDEBUG1");
 
+	JNode.out.println("--features--");
+	if (JNode.use_optional_hues) JNode.out.println("use_optional_hues");
+	if (JNode.use_hue_tableau) JNode.out.println("use_hue_tableau");
+
         try {
             JNode.static_reset();
             FormulaTree ft = logic.disabbreviate(logic.parse(input));
