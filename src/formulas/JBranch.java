@@ -5,19 +5,21 @@ import java.util.*;
 public abstract class JBranch {
 
     /*public JBranch (JColour2 c) {
-    
+
     }*/
     JNode parent;
     JColour2 col;
 //	int num_children_created=0;
     int max_children = 0;
     private HashMap<Integer, JNode> satisfied_by = new HashMap<Integer, JNode>();
+    private HashMap<Pair, JNode> satisfied_by_AU = new HashMap<Pair, JNode>();
 
     /* The direct subchild which satisfies the eventuality (not the final node) */
     private HashMap<Integer, JNode> satisfied_by_D = new HashMap<Integer, JNode>();
     public void clear_eventualities () {
 	     satisfied_by = new HashMap<Integer, JNode>();
 	     satisfied_by_D = new HashMap<Integer, JNode>();
+	     satisfied_by_AU = new HashMap<Pair, JNode>();
     }
 
 
@@ -25,9 +27,9 @@ public abstract class JBranch {
         return children.size();
     }
 
-    /** 
+    /**
      * Set of children than can be used to satisfy eventualities.
-     * @return 
+     * @return
      */
     public ArrayList<JNode> eChildren() {
         return children;
@@ -64,12 +66,13 @@ public abstract class JBranch {
     /**
      * Returns true if we cannot attempt to satisfy eventualties on this branch
      * by adding more children.
-     * @return 
+     * @return
      */
     public boolean eIsFull() {
         return isFull();
     }
 
+    //f index of b formula in (a U b)
     public JNode satsifiedBy(int f) {
         if (JHueEnum.e.int2Hue(col.hues[0]).get(f)) {
             return parent;
@@ -78,8 +81,8 @@ public abstract class JBranch {
             JNode sat_by = satisfied_by.get(f);
             if (sat_by != null) {
 		//TODO: I added the satsified_by_D(irect descendant) test long after
-		// I originally wrote this code. This fixed a bug with 
-		// -((((EXa)U(Xa)))>(((Xa)U(((EXEa)U(Xa)))))) appearing to be 
+		// I originally wrote this code. This fixed a bug with
+		// -((((EXa)U(Xa)))>(((Xa)U(((EXEa)U(Xa)))))) appearing to be
 		// satisfiable. However, is this enough?
 		// I think it should be since we can follow the pruning back.
 		// In any case I MUST port to JHBranch too, or the hue optimization will probably be incorrect.
@@ -89,6 +92,40 @@ public abstract class JBranch {
             }
             return satisfied_by.get(f);
         }
+    }
+
+    // x index of -Y (-AU) formula
+    // y -1 or index of Y (AU) or U formula
+    public JNode satsifiedBy_AU(int x, int y) {
+	JHueEnum e = JHueEnum.e;
+      Subformulas sf = e.sf;
+	int f = sf.negn(sf.right(sf.left(x))); //x = -(aYb) -> f =-b
+	JNode sat_by = satisfied_by_AU.get(f);
+	if (y == -1) {
+	    if (e.int2Hue(col.state_hue).get(f)) return parent;
+	    boolean all_sat=true;
+	    for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
+		if (satsifiedBy_AU(x,i) == null) all_sat = false;
+	    }
+	    for (int i: e.int2Hue(col.state_hue).hasTop("Y")) {
+		if (satsifiedBy_AU(x,i) == null) all_sat = false;
+	    }
+	    if (all_sat) {return parent;}
+	    return parent;
+	} else {
+	    int f2 = sf.right(y);
+	    if (e.int2Hue(col.state_hue).get(f2)  ) return parent;
+	    if (e.int2Hue(col.hues[0]).get(f2)) return parent;
+	}
+
+        //update_eventuality0(f);
+        sat_by = satisfied_by_AU.get(new Pair(x,y));
+        if (sat_by != null) {
+                if (sat_by.pruned) {
+                    return null;
+                }
+        }
+        return sat_by;
     }
 
     public JNode satsifiedBy_D(int f) {
@@ -145,20 +182,58 @@ public abstract class JBranch {
         return updated;
     }
 
+    public boolean update_eventuality_AU(int f, int y) {
+        boolean updated = false;
+        JNode sat_by = satisfied_by_AU.get(new Pair(f,y));
+        if (sat_by != null) {
+            if (sat_by.pruned) {
+                sat_by = null;
+                satisfied_by_AU.put(new Pair(f,y), null);
+                updated = true;
+            }
+        }
+        if (sat_by == null) {
+	    ArrayList<JNode> childa = eChildren();
+	    if (y==-1)       childa = children;
+
+            for (JNode c : childa) {
+		if (!JHueEnum.e.int2Hue(c.col.state_hue).get(f)) continue;
+                if (c.b != null && !c.pruned) {
+                    sat_by = c.b.satsifiedBy_AU(f,y);
+                    if (sat_by != null) {
+                        satisfied_by_AU.put(new Pair(f,y), sat_by);
+                	//satisfied_by_D.put(f, c);
+                        return true;
+                    }
+                }
+            }
+        }
+        return updated;
+    }
+
     public boolean update_eventualities() {
         boolean updated = update_eventualities_();
         if (updated) parent.update_eventualities();
         return updated;
     }
 
-    
+
     public boolean update_eventualities_() {
-        ArrayList<Integer> e = JHueEnum.e.getEventualities(col.hues[0]);
+        //ArrayList<Integer> e = JHueEnum.e.getEventualities(col.hues[0]);
+        ArrayList<Integer> e = col.getEventualities();
         boolean updated = false;
         for (int i : e) {
-            if (update_eventuality(i)) {
-                updated = true;
+            if (update_eventuality(i)) { updated = true; }
+        }
+	if (!JNode.use_no_star) return updated;
+	JHue sh = JHueEnum.e.int2Hue(col.state_hue);
+        e = sh.getEventualities_AU();
+	ArrayList<Integer> e2 = sh.getEventualities_AU2();
+        for (int i : e) {
+	    for (int j : e2) {
+            	if (update_eventuality_AU(i,j)) { updated = true; }
             }
+            if (update_eventuality_AU(i,-1)) { updated = true; }
         }
         //if (updated) parent.update_eventualities();
         return updated;
@@ -264,7 +339,7 @@ final class JE extends JDisjunctBranch {
         max_children = c.num_hues;
 	if (JNode.use_no_star) {
 		assert false;
-	}	
+	}
         //System.out.format("dE\n");
         E_formula = f;
     }
@@ -368,11 +443,11 @@ final class JChooseHue extends JBranch {
         return new JChooseHue(c);
     }
 
-    public boolean eIsFull() { 
+    public boolean eIsFull() {
         return (num_children_created() > 0);
     }
 
-    /*	
+    /*
     public JChooseHue(JNode node) {
     JColour2 c=node.col;
     parent=node;
@@ -401,7 +476,7 @@ final class JChooseHue extends JBranch {
             node.b.parent = node;
         }
         children.add(node);
-        
+
         update_eventualities();
         //num_children_created++;
         return node;
@@ -478,7 +553,7 @@ final class JTemporalSuccessor extends JDisjunctBranch {
         JNode node = JNode.getNode(c, this);
         children.add(node);
 //		num_children_created++;
-        update_eventualities(); 
+        update_eventualities();
         return node;
     }
 }
@@ -488,8 +563,8 @@ abstract class JBinaryRule {
 //    Subformulas sf = JHueEnum.e.sf;
       //static Subformulas sf;
     //Subformulas sf = JHueEnum.e.sf;
-    final Subformulas sf() { return (JHueEnum.e.sf); }  
-	
+    final Subformulas sf() { return (JHueEnum.e.sf); }
+
     public abstract String topString();
 
     public abstract int left_choice(int f);
@@ -528,7 +603,7 @@ final class JUntilRule extends JBinaryRule {
             // Why are these needed?
             if (ret < 0) throw new RuntimeException("Until Left Choice == "+ret+":"+JHueEnum.e.sf.right(f)+ ", from: "+f+" " + JHue.formulaToStringV(f));
             return ret;
-        
+
         }
 
     ;
@@ -580,7 +655,7 @@ final class JBinaryBranch extends JDisjunctBranch {
         hue_index = hi;
         col = c;
 	if (hi == -1) {max_children=2;}
-	//JNode.out.println("Branch: "+r.topString()+" "+JHue 
+	//JNode.out.println("Branch: "+r.topString()+" "+JHue
     }
 
     public JNode addchild(int i) {
@@ -610,7 +685,7 @@ final class JBinaryBranch extends JDisjunctBranch {
                 new_hue = JHueEnum.e.addFormula2Hue(rule.right_choice(formula), col.hues[hue_index]);
                 c = new JColour2(col, new_hue);
                 c.assert_formula(hue_index, rule.left_choice(formula));
-                break;               
+                break;
             default:
                 throw new RuntimeException();
         }
@@ -619,7 +694,7 @@ final class JBinaryBranch extends JDisjunctBranch {
         JNode node = JNode.getNode(c, this);
 
         children.add(node);
-        
+
         update_eventualities();
         //System.out.format("Jor %d : %s\n", i, c.toString());
         return node;

@@ -335,15 +335,20 @@ public class JColour2 {
 
     public java.util.ArrayList<Integer> getEventualities() {
 	Subformulas sf = JHueEnum.e.sf;
-	if (state_E < 0) {
-	        return JHueEnum.e.int2Hue(hues[0]).getEventualities();
-	} else {
+	ArrayList<Integer>     ev=JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	if (JNode.use_no_star) ev=JHueEnum.e.int2Hue(state_hue).addEventualities(ev);
+	return ev;
+
+
+	/*if (state_E < 0) {
+	//        return JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	//} else {
 		java.util.ArrayList<Integer> se = new java.util.ArrayList<Integer>(1);
 		if ("YI".indexOf(sf.topChar(state_E))>1) {
 			se.add(state_E);
 		}
 		return se;
-	}
+	}*/
 	
     }
 
