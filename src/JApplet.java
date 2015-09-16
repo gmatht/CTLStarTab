@@ -322,7 +322,7 @@ class RunTab implements Runnable {
 //class MyFilterWriter extends java.io.FilterWriter {
 class MyFilterWriter extends java.io.Writer {
 	int numlines=0;
-	int maxlines=10;
+	int maxlines=60;
 	boolean need_newline = false;
 	java.io.Writer w;
 
