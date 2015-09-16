@@ -241,7 +241,8 @@ public class JNode {
             throw new RuntimeException();
         }
         JNode n = ((JNode) o);
-        return (java.util.Arrays.equals(col.hues, n.col.hues) && type.equals(n.type)) ;
+        //return (java.util.Arrays.equals(col.hues, n.col.hues) && type.equals(n.type)) ;
+        return (n.col==col && type.equals(n.type)) ;
     }
 
     public JBranch getBranch() {
@@ -532,7 +533,7 @@ public class JNode {
                 // We must have built all eDecendants and still not been able to satisfy our eventualities
                if (log) out.println("Could not fulfill "+toString() + ", pruning;");
                 for (JNode c: eDecendants) {
-                    if (c.b!=null && c.b.eventualitiesSatsified()) {
+                    if ((!JNode.use_no_star) && c.b!=null && c.b.eventualitiesSatsified()) {
                         if (!b.eventualitiesSatsified()) {
                             out.println("???");
                             b.update_eventualities();

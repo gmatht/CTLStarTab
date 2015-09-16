@@ -102,25 +102,35 @@ public class Subformulas {
 	
 	    //System.out.println("DEBUG:  "+i+" maps to "+topChar[i]+", "+left[i]+", "+right[i]);
 	}
-	/* do we actually need path_sensitivity, if we unwind the tableau? */
+	System.out.println("");
 	for(int i=0;i<len;i++){
 	        state_formula[i]=state_formula_(i);
 		path_sensitive[i]=(!state_formula[i]);
 	   	if (state_formula[i]) {
-	   	System.out.print(" SF: "+topChar[i]);
-	   	} else System.out.println("XXXXX: "+topChar[i]);
+	   	System.out.print("  SF: "+topChar[i]);
+	   	} else System.out.print(" ~sf: "+topChar[i]);
 	}
-	for(int j=0;j<len;j++){ //so it converges
+	for(int j=0;j<len*2;j++){ //so it converges
 	for(int i=0;i<len;i++){
 		//path_sensitive[i]=false;
 		//if (full_op[i]) {
-			if(temporal_op[i]) {
+			if(path_sensitive[neg[i]]) {path_sensitive[i]=true;}
+			//if(temporal_op[i]) {
+			if(!state_formula[i]) {
+				path_sensitive[i]=true;
 				if (left [i]>=0) path_sensitive[left[i] ]=true;
 				if (right[i]>=0) path_sensitive[right[i]]=true;
 			}
 			if (topChar[i] == 'A' || (topChar[i] == '-' && topChar[left[i]] == 'A')) path_sensitive[i]=true; //May not be needed?
 		//}
 	}}
+	System.out.println("");
+	for(int i=0;i<len;i++){
+	   	if (path_sensitive[i]) System.out.print("  PS: "+topChar[i]);
+		else System.out.print(" ~ps: "+topChar[i]);
+	}
+
+	       
 	}//end createMaps
     
     public int count(){

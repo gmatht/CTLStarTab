@@ -42,6 +42,13 @@ public abstract class JBranch {
                 return false;
             }
         }
+	if (!JNode.use_no_star) return true; 
+        e = JHueEnum.e.int2Hue(col.state_hue).getEventualities_AU();
+        for (int f : e) {
+            if (satsifiedBy_AU(f,-1) == null) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -299,8 +306,7 @@ public abstract class JBranch {
         ret = JBinaryBranch.create(c, until_rule); if (ret != null) return ret;
         ret = JBinaryBranch.create(c, not_until_rule); if (ret != null) return ret;
         ret = JE.create(c); if (ret != null) return ret;
-        ret = JChooseHue.create(c);
-        return ret;
+        ret = JChooseHue.create(c); return ret;
     }
 }
 
@@ -437,6 +443,7 @@ final class JChooseHue extends JBranch {
 	if (JNode.use_no_star) {
 		max_children += (JHueEnum.e.int2Hue(c.state_hue)).get_E_nostar().size();
 	}
+	
     }
 
     public static JChooseHue create(JColour2 c) {
@@ -532,6 +539,7 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             //  Then we will make sure we throw an exception before we reach MAXINT.
             max_children=Integer.MAX_VALUE;
         } else {
+	    //max_children = 1 << (c.num_hues - 1);
 	    if (c.state_E > -1) max_children = 1 << (c.num_hues - 1);
             else                max_children = 1 << (c.num_hues    );
         }

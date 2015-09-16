@@ -245,6 +245,7 @@ public class JColour2 {
     	assertNotLocked();
         //System.out.format("Norm A %s \n",toString());
         JHueEnum he = JHueEnum.e;
+	JNode.out.println("NormC");
 
         if (state_hue == 0) {
                 contradiction = true; return;
@@ -256,7 +257,7 @@ public class JColour2 {
             }
         }
 
-        if (num_hues > 1) {
+        if (num_hues > 1 || JNode.use_no_star) {
             Subformulas sf = he.sf;
             int num_subformulas = sf.count();
             boolean[] Aformulas = new boolean[num_subformulas];
@@ -291,10 +292,16 @@ public class JColour2 {
 	    }
             for (int f = 0; f < num_subformulas; f++) {
                 if (Aformulas[f]) {
+		    JNode.out.println("b: "+ he.toString(state_hue));
                     for (int j = 0; j < num_hues; j++) {
                         hues[j] = he.addFormula2Hue(f, hues[j]);
                     }
-		    if (JNode.use_no_star) state_hue=he.addFormula2Hue(f, state_hue);
+		    if (JNode.use_no_star) {
+			//JNode.out.println("Adding StateFormula: " + he.sf.toString(f)); 
+			JNode.out.println("bA: "+ he.toString(state_hue));
+			state_hue=he.addFormula2Hue(f, state_hue);
+			JNode.out.println("bB: "+ he.toString(state_hue));
+		    }
                 }
             }
             for (int j = 0; j < num_hues; j++) {
@@ -361,7 +368,7 @@ public class JColour2 {
             throw new RuntimeException();
         }
         JColour2 c = (JColour2) o;
-        return java.util.Arrays.equals(hues, (c.hues)) && state_hue == c.state_hue;
+        return java.util.Arrays.equals(hues, (c.hues)) && state_hue == c.state_hue && state_E == c.state_E; 
     }
     
     private int hashCode_() {
