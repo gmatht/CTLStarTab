@@ -1,0 +1,190 @@
+diff --git a/src/JApplet.java b/src/JApplet.java
+index abd2ab3..2d4b55e 100755
+--- a/src/JApplet.java
++++ b/src/JApplet.java
+@@ -16,6 +16,7 @@ import formulas.*;
+ import java.io.PrintWriter;
+ import java.io.IOException;
+ import formulas.JRunTab.Solver;
++
+ /**
+  *
+  * @author john
+@@ -24,6 +25,7 @@ public class JApplet extends javax.swing.JApplet {
+ 
+     public static void main (String[] args) {
+ 
++	
+ 	System.out.format ("Num Args: %s\n", args.length);
+ 	String formula;
+ 	String outfile="default.out";
+@@ -43,9 +45,21 @@ public class JApplet extends javax.swing.JApplet {
+ 			}
+ 
+ 
+-        	(new JRunTab(formula, r, logic, outfile.contains ("VERB"))).run();
++        	new JRunTab(formula, r, logic, outfile.contains ("VERB")).run();
+ 		break;
+ 		default:
++		new JRunTab("{21}p", (Report)(new ReportToFile("default.out")), Solver.BCTLNEW, false).run();
++		try {
++			java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader("default.out"));
++			String line = null;
++			while ((line = br.readLine()) != null) {
++				System.out.println(line);
++			}
++		} catch(Exception e){
++			System.out.println("Could not print file\n");
++		}
++		System.out.println("--End of test run--\n\n");
++
+ 		System.out.println("Usage: java JApplet formula [BCTLNEW|BCTLOLD|CTL] outputfile\n");
+ 	} 
+ 
+diff --git a/src/formulas/AUXLogic.java b/src/formulas/AUXLogic.java
+index 358339c..c0bf94e 100755
+--- a/src/formulas/AUXLogic.java
++++ b/src/formulas/AUXLogic.java
+@@ -23,6 +23,7 @@ public class AUXLogic implements Logic {
+     
+     public FormulaTree disabbreviate(FormulaTree f) {
+         if ((f.topChar()>='a') && (f.topChar()<='z')) return f;
++        if (f.topChar()>='{') return f;
+         
+         switch (f.topChar()){
+             case '0':
+@@ -140,7 +141,7 @@ public class AUXLogic implements Logic {
+     }
+    
+    public boolean isUnary(char c){
+-       if ((c=='-') || 
++       if ((c=='-') || (c=='{') || 
+        (c=='F') || (c=='P') || (c=='G') || (c=='H') || (c=='X') ||
+        (c=='E') || (c=='A')) return true;
+         return false;
+@@ -220,6 +221,7 @@ public class AUXLogic implements Logic {
+     
+     public FormulaTree abbreviate(FormulaTree f) {
+         if ((f.topChar()>='a') && (f.topChar()<='z')) return f;
++        if (f.topChar()>='{') return f;
+         
+         switch (f.topChar()){
+ 
+diff --git a/src/formulas/FormulaTree.java b/src/formulas/FormulaTree.java
+index aa0ba42..2199534 100755
+--- a/src/formulas/FormulaTree.java
++++ b/src/formulas/FormulaTree.java
+@@ -160,10 +160,10 @@ public class FormulaTree {
+      
+      public String toString(){
+          if (root.isZeroary()){
+-             return ""+root.getContent().toChar();
++             return ""+root.getContent().toString();
+           }
+           if (root.isUnary()){
+-             return ""+root.getContent().toChar()+leftSubtree().toString();
++             return ""+root.getContent().toString()+leftSubtree().toString();
+           }
+           if (root.isBinary()){
+              return "("+leftSubtree().toString()+root.getContent().toChar()+rightSubtree().toString()+")";
+diff --git a/src/formulas/JHue.java b/src/formulas/JHue.java
+index d89706d..0dc8da3 100755
+--- a/src/formulas/JHue.java
++++ b/src/formulas/JHue.java
+@@ -7,6 +7,9 @@ public class JHue extends java.util.BitSet {
+ 	
+ 	protected Subformulas sf;
+ 	
++	protected Set<boolean[]> StrongVetos = new HashSet<boolean[]>();
++	protected boolean[] WeakVeto = null; 
++	
+ 	private int cached_hashcode=-1; // This isn't really used except for debugging.
+ 	
+ 	public Object clone() {
+diff --git a/src/formulas/Symbol.java b/src/formulas/Symbol.java
+index 43ea777..f967ee1 100755
+--- a/src/formulas/Symbol.java
++++ b/src/formulas/Symbol.java
+@@ -12,12 +12,19 @@ package formulas;
+  */
+ public class Symbol {
+     char c;
++    boolean[] set=null; // a set of agents
+     
+     /** Creates a new instance of Symbol */
+     public Symbol(char c) {
+         this.c=c;
+     }
+     
++    public Symbol(char c, boolean[] set) {
++        this.c=c;
++        
++        this.set=set;
++    }
++    
+     public boolean isOpenParenthesis(){
+         return c=='(';
+     }
+@@ -47,15 +54,26 @@ public class Symbol {
+    }
+    
+    public String toString(){
+-       return ""+c;
+-   }
++		if (set==null) {
++			return ""+c;
++		} else {
++			//String s="{";
++			String s="\u00AB";			
++			for (int i=0; i<10; i++) {
++				if (set[i]) {
++					s=s+Integer.toString(i);
++				}
++			}
++			s=s+"\u00BB";
++			return s;
++		}
++   }   
+     
+    public boolean equals(Symbol other){
+-       return (c==other.c);
++       return (c==other.c && set==other.set);
+    }
+    
+    public char toChar(){
+        return c;
+    }
+-        
+ }
+diff --git a/src/formulas/Tokenizer.java b/src/formulas/Tokenizer.java
+index 093e2a0..2b8fae1 100755
+--- a/src/formulas/Tokenizer.java
++++ b/src/formulas/Tokenizer.java
+@@ -31,9 +31,25 @@ public class Tokenizer {
+         return (index>=input.length());
+     }
+     
+-    public Symbol next(){
++    public char _next(){
+         index++;
+-        return new Symbol(input.charAt(index-1));
++        return input.charAt(index-1);
++    }
++    
++    public Symbol next(){
++        char c =_next();
++        Symbol sym = new Symbol(input.charAt(index-1));
++        if (c=='{') {
++			boolean[] agents = new boolean[10];
++			c=_next();
++			while (c!='}') {
++				agents[((int)c)-((int)'0')]=true;
++				c=_next();
++			}
++			return new Symbol('{',agents);
++		} else {
++			return new Symbol(c);
++		}
+     }
+     
+     
