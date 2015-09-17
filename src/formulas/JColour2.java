@@ -98,6 +98,9 @@ public class JColour2 {
         JHueEnum he = JHueEnum.e;
         //String s="C:{" + Integer.toString(hues[0]);
         String s="C:";
+	if (state_E != -1) {
+		s = s + " e: "+JHue.formulaToString(state_E)+" ";
+	}
 	if (JNode.use_no_star) {
 	    	assert(state_hue>=0);
 		if (state_hue>=0) s = s + " [" + he.toString(state_hue) + "] ";
