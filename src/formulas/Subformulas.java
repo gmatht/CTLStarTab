@@ -33,15 +33,16 @@ public class Subformulas {
 
    
    private boolean state_formula_(int i){ 
-	    switch (topChar[i]) {
-		case 'A': case 'E': case 'B': /*AX*/ return true;
-		case 'Y': case 'I': /*AU, EU*/ return true;
-		case 'U': case 'F': case 'G': case 'X': case 'W': return false; 
-		default:  //if (JColour2.state_variables && (topChar[i] >= 'a' && topChar[i] <= 'z')) return false;
-			  return (
-			(left[i]  < 0 || state_formula_(left[i] )) &&
-			(right[i] < 0 || state_formula_(right[i])));
-	   }
+	return AUXLogic.state_formula(closure[i]);
+	    //switch (topChar[i]) {
+		//case 'A': case 'E': case 'B': /*AX*/ return true;
+		//case 'Y': case 'I': /*AU, EU*/ return true;
+		//case 'U': case 'F': case 'G': case 'X': case 'W': return false; 
+		//default:  if (JColour2.state_variables && (topChar[i] >= 'a' && topChar[i] <= 'z')) return false;
+			  //return (
+			//(left[i]  < 0 || state_formula_(left[i] )) &&
+			//(right[i] < 0 || state_formula_(right[i])));
+	   //}
    }
     
     //finds indices of related fmlas
@@ -121,7 +122,7 @@ public class Subformulas {
 				if (left [i]>=0) path_sensitive[left[i] ]=true;
 				if (right[i]>=0) path_sensitive[right[i]]=true;
 			}
-			if (topChar[i] == 'A' || (topChar[i] == '-' && topChar[left[i]] == 'A')) path_sensitive[i]=true; //May not be needed?
+			//if (topChar[i] == 'A' || (topChar[i] == '-' && topChar[left[i]] == 'A')) path_sensitive[i]=true; //May not be needed?
 		//}
 	}}
 	System.out.println("");

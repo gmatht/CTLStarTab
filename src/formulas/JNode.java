@@ -24,6 +24,7 @@ public class JNode {
     static public boolean use_hue_tableau = false;
     static boolean use_optional_hues = false; // not finished.
     static boolean use_no_star = true; // not finished. /* use combined BCTL and BCTL* tableau */
+    public static boolean use_no_star_auto() {return true;}
 
     int node_num;
 

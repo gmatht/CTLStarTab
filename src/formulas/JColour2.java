@@ -187,7 +187,7 @@ public class JColour2 {
         public JColour2(JColour2 c, int h) {
         num_hues = c.num_hues + 1;
 	state_hue = c.state_hue;
-	state_E = c.state_hue;
+	state_E = c.state_E;
         hues = (new int[num_hues]);
         System.arraycopy(c.hues, 0, hues, 0, c.num_hues);
    /*     if (JNode.use_optional_hues) {
@@ -305,12 +305,18 @@ public class JColour2 {
 		    JNode.out.println("b: "+ he.toString(state_hue));
                     for (int j = 0; j < num_hues; j++) {
                         hues[j] = he.addFormula2Hue(f, hues[j]);
+		    	if (sf.topChar(f) == 'A') {
+				hues[j] = he.addFormula2Hue(sf.left(f), hues[j]);
+			}
                     }
 		    if (JNode.use_no_star) {
 			//JNode.out.println("Adding StateFormula: " + he.sf.toString(f)); 
 			JNode.out.println("bA: "+ he.toString(state_hue));
 			state_hue=he.addFormula2Hue(f, state_hue);
 			JNode.out.println("bB: "+ he.toString(state_hue));
+		    	if (sf.topChar(f)=='-' && sf.topChar(sf.left(f)) == 'A') {
+				state_hue=he.addFormula2Hue(sf.negn(sf.left(sf.left(f))), state_hue);
+			}
 		    }
                 }
             }

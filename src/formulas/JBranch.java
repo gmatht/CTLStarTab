@@ -98,9 +98,9 @@ public abstract class JBranch {
 
     //f index of b formula in (a U b)
     public JNode satsifiedBy(int f) {
-        if (JHueEnum.e.int2Hue(col.hues[0]).get(f)) {
-            return parent;
-        } else {
+        if (JHueEnum.e.int2Hue(col.hues[0]).get(f)) return parent;
+        if (JNode.use_no_star && JHueEnum.e.int2Hue(col.state_hue).get(f)) return parent;
+        {
             //update_eventuality0(f);
             JNode sat_by = satisfied_by.get(f);
             if (sat_by != null) {
@@ -160,9 +160,9 @@ public abstract class JBranch {
     }
 
     public JNode satsifiedBy_D(int f) {
-        if (JHueEnum.e.int2Hue(col.hues[0]).get(f)) {
-            return parent;
-        } else {
+        if (JHueEnum.e.int2Hue(col.hues[0]).get(f)) { return parent; }
+        if (JNode.use_no_star && JHueEnum.e.int2Hue(col.state_hue).get(f)) return parent;
+        {
             //update_eventuality0(f);
             JNode sat_by = satisfied_by_D.get(f);
             if (sat_by != null) {
@@ -198,7 +198,7 @@ public abstract class JBranch {
             }
         }
         if (sat_by == null) {
-            for (JNode c : eChildren()) {
+            for (JNode c : eChildren()) { FIXME: need to determine if I type eventuality
                 if (c.b != null && !c.pruned) {
                     sat_by = c.b.satsifiedBy(f);
                     if (sat_by != null) {
@@ -403,8 +403,12 @@ final class JE extends JDisjunctBranch {
         int num_hues = c.num_hues;
         JHueEnum he = JHueEnum.e;
         Subformulas sf = he.sf;
-        for (int i = 0; i < num_hues; i++) {
-            JHue h = he.int2Hue(c.hues[i]);
+	int i0 = 0;
+	if (JNode.use_no_star) i0=-1;
+        for (int i = i0; i < num_hues; i++) {
+            JHue h;// = he.int2Hue(c.hues[i]);
+	    if (i == -1) { h = he.int2Hue(c.state_hue); }
+	    else { h = he.int2Hue(c.hues[i]); }
             {
                 //int num_subformulas=c.he.sf.count();
                 for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
@@ -683,7 +687,8 @@ final class JBinaryBranch extends JDisjunctBranch {
     }
 
     public JBinaryBranch(JColour2 c, JBinaryRule r, int f, int hi) {
-        max_children = 4;
+        //max_children = 4;
+        max_children = 3;
         rule = r;
         formula = f;
         hue_index = hi;
@@ -796,6 +801,8 @@ final class JBinaryBranch extends JDisjunctBranch {
             JHue h = he.int2Hue(c.hues[i]);
             //int num_subformulas=c.he.sf.count();
             for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
+		if (JNode.use_no_star && sf.state_formula(f))
+			continue;
                 int subf = sf.followString(f, r.topString());
                 //System.out.println(sf.topChar(f));
                 if (subf >= 0) {

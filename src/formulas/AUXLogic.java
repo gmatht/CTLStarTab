@@ -20,6 +20,21 @@ public class AUXLogic implements Logic {
         FormulaTree.setLogic(this);
         return FormulaTree.parse(s);
     }
+
+   //Should probably remove similar function from Subformlas.java
+   public static boolean state_formula(FormulaTree f){
+            switch (f.topChar()) {
+                case 'A': case 'E': case 'B': /*AX*/ return true;
+                case 'Y': case 'I': /*AU, EU*/ return true;
+                case 'U': case 'F': case 'G': case 'X': case 'W': return false;
+		case '&': case '|': case '>': case '<': case '=': return state_formula(f.leftSubtree() ) && state_formula(f.rightSubtree());
+		case '-': return state_formula(f.leftSubtree() );
+                default:
+			assert (f.topChar() >= 'a' && f.topChar() <= 'z');
+			return JColour2.state_variables;
+           }
+   }
+
     
     public FormulaTree disabbreviate(FormulaTree f) {
 	char c = f.topChar();
@@ -74,9 +89,42 @@ public class AUXLogic implements Logic {
                 return new FormulaTree('X',disabbreviate(f.leftSubtree()));
             case 'U': case 'Y': case 'I':
                 return new FormulaTree(c,disabbreviate(f.leftSubtree()),disabbreviate(f.rightSubtree())); 
-            case 'A': case 'B':
+            case 'A':
+		if (JNode.use_no_star_auto()) {
+			FormulaTree L=f.leftSubtree();
+			char c2 = L.topChar();
+			switch (c2){
+				case 'U': if (state_formula(L.leftSubtree()) && state_formula(L.rightSubtree()))
+					 return new FormulaTree('Y',disabbreviate(L.leftSubtree()),disabbreviate(L.rightSubtree())); 
+					 break;
+				case 'X': if (state_formula(L.leftSubtree()))
+					return new FormulaTree('B',disabbreviate(L.leftSubtree())); break;
+				case 'F': if (state_formula(L.leftSubtree()))
+			                return new FormulaTree('Y',new FormulaTree('1'),disabbreviate(L.leftSubtree())); break;
+				case 'G': if (state_formula(L.leftSubtree())) 
+					return new FormulaTree('-', new FormulaTree('I',new FormulaTree('1'), new FormulaTree('-', disabbreviate(L.leftSubtree()))));
+			}
+		}
+	    case 'B':
                 return new FormulaTree(c,disabbreviate(f.leftSubtree()));
             case 'E':
+		FormulaTree L=f.leftSubtree();
+		char c2 = L.topChar();
+		if (JNode.use_no_star_auto()) {
+			switch (c2){
+				case 'U': if (state_formula(L.leftSubtree()) && state_formula(L.rightSubtree()))
+					 return new FormulaTree('I',disabbreviate(L.leftSubtree()),disabbreviate(L.rightSubtree())); 
+					 break;
+				case 'X': if (state_formula(L.leftSubtree()))
+					return new FormulaTree('-',new FormulaTree('B',new FormulaTree('-',disabbreviate(L.leftSubtree())))); 
+				case 'F': if (state_formula(L.leftSubtree()))
+			                return new FormulaTree('I',new FormulaTree('1'),disabbreviate(L.leftSubtree()));
+					break;
+				case 'G': if (state_formula(L.leftSubtree())) 
+					return new FormulaTree('-', new FormulaTree('Y',new FormulaTree('1'), new FormulaTree('-', disabbreviate(L.leftSubtree()))));
+					break;
+			}
+		}
                 return new FormulaTree('-',
                         new FormulaTree('A',
                             new FormulaTree('-',
