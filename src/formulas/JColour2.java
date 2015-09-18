@@ -54,8 +54,9 @@ public class JColour2 {
 
     public JColour2(JHueEnum e, Subformulas sf) {
             JHue h = new JHue(sf);
-            num_hues = 1;
-            hues = new int[1];
+            num_hues = 2;
+            hues = new int[2];
+	    hues[1]=JHueEnum.e.hue2Int(new JHue(sf));
 	    if (JNode.use_no_star) {
             	//JHue sh = new JStateHue(sf);
             	JHue sh = new JHue(true,sf);
@@ -313,7 +314,6 @@ public class JColour2 {
 		    }
                 }
             }
-	    if (state_hue == 0) contradiction = true;
             for (int j = 0; j < num_hues; j++) {
                 if (hues[j] == 0) {
                     contradiction = true;
@@ -337,6 +337,7 @@ public class JColour2 {
             }
         }
 //                		System.out.format("Norm B %s \n",toString());
+	if (state_hue == 0) contradiction = true;
         sortAndPack();
         if (num_hues > max_num_hues_in_colour) {
             max_num_hues_in_colour = num_hues;

@@ -228,8 +228,8 @@ public abstract class JBranch {
 	    if (y==-1)       childa = children;
 
             for (JNode c : childa) {
-		if (!JHueEnum.e.int2Hue(c.col.state_hue).get(f)) continue;
                 if (c.b != null && !c.pruned) {
+		    if (!JHueEnum.e.int2Hue(c.col.state_hue).get(f)) continue;
                     sat_by = c.b.satsifiedBy_AU(f,y);
                     if (sat_by != null) {
                         satisfied_by_AU.put(new Pair(f,y), sat_by);
@@ -262,6 +262,7 @@ public abstract class JBranch {
 	ArrayList<Integer> e2 = col.getEventualities_AU2();
         for (int i : e) {
 	    for (int j : e2) {
+		JNode.out.println("("+i+","+j+")");
             	if (update_eventuality_AU(i,j)) { updated = true; }
             }
             if (update_eventuality_AU(i,-1)) { updated = true; }
@@ -696,6 +697,8 @@ final class JBinaryBranch extends JDisjunctBranch {
         if (col == null) {
             throw new NullPointerException();
         }
+	assert(col.state_hue != 0);
+	JNode.out.println("FOO: "+col.state_hue);
         Subformulas sf = JHueEnum.e.sf;
         switch (i) {
             //Left hand side of or is true
@@ -723,11 +726,13 @@ final class JBinaryBranch extends JDisjunctBranch {
                 throw new RuntimeException();
         }
 //		num_children_created++;
-                c.normalise();
+        c.normalise();
+       
         JNode node = JNode.getNode(c, this);
 
         children.add(node);
 
+	JNode.out.println("FOO: "+col.state_hue);
         update_eventualities();
         //System.out.format("Jor %d : %s\n", i, c.toString());
         return node;
