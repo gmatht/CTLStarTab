@@ -169,10 +169,13 @@ public class JHue extends java.util.BitSet {
 		//if (sf.topChar(j) == 'E' && sf.AE_no_star(j)) {
 		int L=sf.left(j); char c=sf.topChar(j);
 		if ( c=='I' && (!get(sf.right(j))) )                  e.add(j);
-		if ( c=='-' && sf.topChar(L)=='Y' && get(sf.left(L))) e.add(j);
+		if ( c=='-' && sf.topChar(L)=='Y' && !get(sf.negn(sf.left(L)))) e.add(j);
 		if ( c=='-' && sf.topChar(L)=='B' ) e.add(sf.negn(sf.left(L)));
             }
 
+	    JNode.out.print (toString() + " ENS-> ");
+	    for (int i: e) { JNode.out.print(formulaToString(i)+", "); }
+	    JNode.out.println ("");
             return e;
 
         }
@@ -219,17 +222,16 @@ public class JHue extends java.util.BitSet {
 
         }
 
-        public ArrayList<Integer> getEventualities_AU2() {
-            ArrayList<Integer> e = new ArrayList<Integer>();
-
+        public ArrayList<Integer> addEventualities_AU2(char top, ArrayList<Integer> e) {
             for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1))
-		if (sf.topChar(j)=='U'||sf.topChar(j)=='Y') 
+		if (sf.topChar(j)==top) 
 		    if (!get(sf.right(j)))
 			e.add(j);
 
             return e;
 
         }
+
 
 	public JHue temporalSuccessor(int i) {
 		//if(statehue) {

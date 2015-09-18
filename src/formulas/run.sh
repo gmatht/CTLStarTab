@@ -13,7 +13,8 @@ cd ..
 #java JApplet '(Bp)Y(Bq)&(B-p)&(B-q)' ; cat default.out
 #java JApplet '(pYq)&AG-q' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet '(pYq)&G-q' BCTLNEW VERB.out ; cat VERB.out
-java JApplet '-(pYq)&A(pUq)' BCTLNEW VERB.out ; cat VERB.out
+#java JApplet '-(pYq)&A(pUq)' BCTLNEW VERB.out ; cat VERB.out
+java JApplet '-(pYq)&p&BA(pUq)' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet 'A(pUq)&G-q' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet 'G-q' BCTLNEW VERB.out ; cat VERB.out
 )

@@ -153,6 +153,7 @@ public class JColour2 {
         /*                if (c.he == null) {
         throw new RuntimeException();
         }*/
+	state_E=c.state_E;
 	int i0=1; if (state_E >= 0) i0=0;
         num_hues = bi.bitCount() + i0;
         hues = new int[num_hues];
@@ -160,8 +161,11 @@ public class JColour2 {
 	if (JNode.use_no_star) {
 		JNode.out.println("AA: "+ e.toString(c.state_hue));
 		state_hue=e.temporalSuccessor(c.state_hue);
-		JNode.out.println("AB: "+ e.toString(state_hue));
-		if (state_E >=0) state_hue = e.addFormula2Hue(state_E, state_hue);
+		if (state_E >=0) {
+			JNode.out.println("AB: "+ e.toString(state_hue)+" + "+JHue.formulaToString(state_E));
+			state_hue = e.addFormula2Hue(state_E, state_hue);
+		}
+		JNode.out.println("AC: "+ e.toString(state_hue));
 	}
 	if (i0>0) hues[0]   = e.temporalSuccessor(c.hues[0]);
         //hues[0]=he.temporalSuccessor(c.hues[0]);
@@ -181,6 +185,8 @@ public class JColour2 {
 	// Creates a Colour with a new hue h
         public JColour2(JColour2 c, int h) {
         num_hues = c.num_hues + 1;
+	state_hue = c.state_hue;
+	state_E = c.state_hue;
         hues = (new int[num_hues]);
         System.arraycopy(c.hues, 0, hues, 0, c.num_hues);
    /*     if (JNode.use_optional_hues) {
@@ -307,6 +313,7 @@ public class JColour2 {
 		    }
                 }
             }
+	    if (state_hue == 0) contradiction = true;
             for (int j = 0; j < num_hues; j++) {
                 if (hues[j] == 0) {
                     contradiction = true;
@@ -348,8 +355,19 @@ public class JColour2 {
 	ArrayList<Integer>     ev=JHueEnum.e.int2Hue(hues[0]).getEventualities();
 	if (JNode.use_no_star) ev=JHueEnum.e.int2Hue(state_hue).addEventualities(ev);
 	return ev;
+    }
 
-
+    public java.util.ArrayList<Integer> getEventualities_AU() {
+	Subformulas sf = JHueEnum.e.sf;
+	return JHueEnum.e.int2Hue(state_hue).getEventualities_AU();
+    }
+    public java.util.ArrayList<Integer> getEventualities_AU2() {
+	Subformulas sf = JHueEnum.e.sf;
+	ArrayList<Integer>     ev=new ArrayList<Integer>(2);
+	JHueEnum.e.int2Hue(hues[0]).addEventualities_AU2('U',ev);
+        ev=JHueEnum.e.int2Hue(state_hue).addEventualities_AU2('Y',ev);
+	return ev;
+    }
 	/*if (state_E < 0) {
 	//        return JHueEnum.e.int2Hue(hues[0]).getEventualities();
 	//} else {
@@ -359,8 +377,6 @@ public class JColour2 {
 		}
 		return se;
 	}*/
-	
-    }
 
     public boolean hasContradiction() {
         return contradiction;

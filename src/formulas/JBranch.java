@@ -43,7 +43,7 @@ public abstract class JBranch {
             }
         }
 	if (!JNode.use_no_star) return true; 
-        e = JHueEnum.e.int2Hue(col.state_hue).getEventualities_AU();
+        e = col.getEventualities_AU();
         for (int f : e) {
             if (satsifiedBy_AU(f,-1) == null) {
                 return false;
@@ -66,6 +66,23 @@ public abstract class JBranch {
 		}
             }
             comma=", ";
+        }
+        if (!JNode.use_no_star) return (s+"}");
+	s += "}{";
+
+        e = col.getEventualities_AU();
+        for (int f : e) {
+	    JNode sat_by=satsifiedBy_AU(f,-1);
+            if (sat_by == null) { s+=comma+JHue.formulaToString(f)+":0"; } 
+            else { s+=comma+JHue.formulaToString(f)+":"+sat_by.toString(); }
+            comma=", ";
+	    ArrayList<Integer> e2 = col.getEventualities_AU2();
+	    for (int f2 : e2) {
+		String evStr= "("+JHue.formulaToString(f)+", "+JHue.formulaToString(f2)+")";
+		sat_by=satsifiedBy_AU(f,f2);
+            	if (sat_by == null) { s+=comma+evStr+":0"; } 
+            	else { s+=comma+evStr+":"+sat_by.toString(); }
+	    }
         }
         return s+"}";
     }
@@ -106,27 +123,34 @@ public abstract class JBranch {
     public JNode satsifiedBy_AU(int x, int y) {
 	JHueEnum e = JHueEnum.e;
       Subformulas sf = e.sf;
-	int f = sf.negn(sf.right(sf.left(x))); //x = -(aYb) -> f =-b
-	JNode sat_by = satisfied_by_AU.get(f);
+	int f = sf.negn(sf.left(sf.left(x))); //x = -(aYb) -> f =-a
 	if (y == -1) {
 	    if (e.int2Hue(col.state_hue).get(f)) return parent;
 	    boolean all_sat=true;
-	    for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
+	    /*for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
 		if (satsifiedBy_AU(x,i) == null) all_sat = false;
 	    }
 	    for (int i: e.int2Hue(col.state_hue).hasTop("Y")) {
 		if (satsifiedBy_AU(x,i) == null) all_sat = false;
+	    }*/
+	    for (int i: col.getEventualities_AU2()) {
+	        if (satsifiedBy_AU(x,i) == null) all_sat = false;
 	    }
+		
 	    if (all_sat) {return parent;}
-	    return parent;
 	} else {
 	    int f2 = sf.right(y);
+	    if (f2==-1) {
+		JNode.out.print("RHS="+JHue.formulaToString(y));
+		assert false;
+	    }
 	    if (e.int2Hue(col.state_hue).get(f2)  ) return parent;
 	    if (e.int2Hue(col.hues[0]).get(f2)) return parent;
 	}
 
         //update_eventuality0(f);
-        sat_by = satisfied_by_AU.get(new Pair(x,y));
+        //sat_by = satisfied_by_AU.get(new Pair(x,y));
+	JNode sat_by = satisfied_by_AU.get(new Pair(x,y));
         if (sat_by != null) {
                 if (sat_by.pruned) {
                     return null;
@@ -235,7 +259,7 @@ public abstract class JBranch {
 	if (!JNode.use_no_star) return updated;
 	JHue sh = JHueEnum.e.int2Hue(col.state_hue);
         e = sh.getEventualities_AU();
-	ArrayList<Integer> e2 = sh.getEventualities_AU2();
+	ArrayList<Integer> e2 = col.getEventualities_AU2();
         for (int i : e) {
 	    for (int j : e2) {
             	if (update_eventuality_AU(i,j)) { updated = true; }
@@ -541,7 +565,7 @@ final class JTemporalSuccessor extends JDisjunctBranch {
         } else {
 	    //max_children = 1 << (c.num_hues - 1);
 	    if (c.state_E > -1) max_children = 1 << (c.num_hues - 1);
-            else                max_children = 1 << (c.num_hues    );
+            else                max_children = (1 << (c.num_hues    )) - 1;
         }
     }
 
@@ -556,6 +580,7 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             return null;
         }
         int n = num_children_created();
+	if (col.state_E != -1) n++;
         JColour2 c = new JColour2(col, new java.math.BigInteger(Integer.toString(n)));
         c.normalise();
         JNode node = JNode.getNode(c, this);
