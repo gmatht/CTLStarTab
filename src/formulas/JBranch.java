@@ -268,6 +268,7 @@ public abstract class JBranch {
 
     public boolean update_eventualities_() {
         //ArrayList<Integer> e = JHueEnum.e.getEventualities(col.hues[0]);
+	assert(!col.hasContradiction());
         ArrayList<Integer> e = col.getEventualities();
         boolean updated = false;
         for (int i : e) {

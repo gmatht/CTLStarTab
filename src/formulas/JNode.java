@@ -51,7 +51,7 @@ public class JNode {
     
     public void prune() {
         pruned = true;
-        update_eventualities();
+        //update_eventualities();
 	JNode.out.println ("Pruned "+toString());
         uncovered.remove(this);
         unfulfilled.remove(this);
