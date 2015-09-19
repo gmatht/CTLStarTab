@@ -554,6 +554,16 @@ final class JChooseHue extends JBranch {
 
     public ArrayList<JNode> eChildren() {
         ArrayList<JNode> first_child = new ArrayList<JNode>();
+	if (col.state_E != -1) {
+	    // the term first_child comes because before implementing BEXP/state_E child 0 was always the unchanged one
+	    for (JNode child: children) {
+		if (child.col.state_E == col.state_E) {
+		    first_child.add(child);
+		    return first_child;
+		}
+	    }
+	    return first_child;
+	}
         if (!children.isEmpty())
             first_child.add(children.get(0));
         return first_child;

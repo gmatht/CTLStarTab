@@ -52,6 +52,7 @@ public class JNode {
     public void prune() {
         pruned = true;
         update_eventualities();
+	JNode.out.println ("Pruned "+toString());
         uncovered.remove(this);
         unfulfilled.remove(this);
         for (JBranch pb: parents) {
@@ -536,8 +537,12 @@ public class JNode {
             if (!b.eventualitiesSatsified()) {
                 // We must have built all eDecendants and still not been able to satisfy our eventualities
                if (log) out.println("Could not fulfill "+toString() + ", pruning;");
-                for (JNode c: eDecendants) {
-                    if ((!JNode.use_no_star) && c.b!=null && c.b.eventualitiesSatsified()) {
+                /*if (JNode.use_no_star) {
+		    for (JNode c: eDecendants) {
+
+		else*/ {
+		    for (JNode c: eDecendants) {
+                    if (c.b!=null && c.b.eventualitiesSatsified()) {
                         if (!b.eventualitiesSatsified()) {
                             out.println("???");
                             b.update_eventualities();
@@ -556,6 +561,7 @@ public class JNode {
                         }
                     }
                     c.prune();
+		 }
                 }
                 return;
                  
