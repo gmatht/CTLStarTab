@@ -23,15 +23,16 @@ public class AUXLogic implements Logic {
 
    //Should probably remove similar function from Subformlas.java
    public static boolean state_formula(FormulaTree f){
-            switch (f.topChar()) {
-                case 'A': case 'E': case 'B': /*AX*/ return true;
+	char c=f.topChar();
+            switch (c) {
+		case 'A': case 'E': case 'B': case '0': case '1': /*AX*/ return true;
                 case 'Y': case 'I': /*AU, EU*/ return true;
                 case 'U': case 'F': case 'G': case 'X': case 'W': return false;
 		case '&': case '|': case '>': case '<': case '=': return state_formula(f.leftSubtree() ) && state_formula(f.rightSubtree());
 		case '-': return state_formula(f.leftSubtree() );
                 default:
-			assert (f.topChar() >= 'a' && f.topChar() <= 'z');
-			return JColour2.state_variables;
+			if  (c >= 'a' && c <= 'z') return JColour2.state_variables;
+			throw new RuntimeException ("Unexpected SF char "+c);
            }
    }
 

@@ -386,9 +386,6 @@ final class JE extends JDisjunctBranch {
     public JE(JColour2 c, int f) {
         col = c;
         max_children = c.num_hues;
-	if (JNode.use_no_star) {
-		assert false;
-	}
         //System.out.format("dE\n");
         E_formula = f;
     }
