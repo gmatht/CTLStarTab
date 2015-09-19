@@ -164,7 +164,7 @@ public abstract class JBranch {
 	Subformulas sf = JHueEnum.e.sf;
 	switch (sf.topChar(x)) {
 	    case 'I': assert y==-1; sat_by = satsifiedBy_AUI(x); break;
-	    case '-': sat_by= satsifiedBy_AU(x,y); break;
+	    case '-': sat_by= satsifiedBy_AUY(x,y); break;
 	    default:  throw new RuntimeException("Invalid AU Eventuality");
 	}
 	if (sat_by != null) return sat_by;
