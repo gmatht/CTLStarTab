@@ -540,7 +540,9 @@ public class JNode {
                 /*if (JNode.use_no_star) {
 		    for (JNode c: eDecendants) {
 
-		else*/ {
+		else*/ 
+	        //if (!JNode.use_no_star) 
+		{
 		    for (JNode c: eDecendants) {
                     if (c.b!=null && c.b.eventualitiesSatsified()) {
                         if (!b.eventualitiesSatsified()) {

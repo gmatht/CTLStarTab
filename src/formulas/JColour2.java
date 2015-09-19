@@ -360,7 +360,9 @@ public class JColour2 {
 
     public java.util.ArrayList<Integer> getEventualities() {
 	Subformulas sf = JHueEnum.e.sf;
-	ArrayList<Integer>     ev=JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	ArrayList<Integer>     ev ;
+	if (state_E==-1) ev=JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	else ev = new ArrayList<Integer>();
 	if (JNode.use_no_star) ev=JHueEnum.e.int2Hue(state_hue).addEventualities(ev);
 	return ev;
     }
