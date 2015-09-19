@@ -255,7 +255,7 @@ public class JColour2 {
     	assertNotLocked();
         //System.out.format("Norm A %s \n",toString());
         JHueEnum he = JHueEnum.e;
-	JNode.out.println("NormC");
+	//JNode.out.println("NormC");
 
         if (state_hue == 0) {
                 contradiction = true; return;
@@ -302,7 +302,7 @@ public class JColour2 {
 	    }
             for (int f = 0; f < num_subformulas; f++) {
                 if (Aformulas[f]) {
-		    JNode.out.println("b: "+ he.toString(state_hue));
+		    //JNode.out.println("b: "+ he.toString(state_hue));
                     for (int j = 0; j < num_hues; j++) {
                         hues[j] = he.addFormula2Hue(f, hues[j]);
 		    	if (sf.topChar(f) == 'A') {
@@ -311,9 +311,9 @@ public class JColour2 {
                     }
 		    if (JNode.use_no_star) {
 			//JNode.out.println("Adding StateFormula: " + he.sf.toString(f)); 
-			JNode.out.println("bA: "+ he.toString(state_hue));
+			//JNode.out.println("bA: "+ he.toString(state_hue));
 			state_hue=he.addFormula2Hue(f, state_hue);
-			JNode.out.println("bB: "+ he.toString(state_hue));
+			//JNode.out.println("bB: "+ he.toString(state_hue));
 		    	if (sf.topChar(f)=='-' && sf.topChar(sf.left(f)) == 'A') {
 				state_hue=he.addFormula2Hue(sf.negn(sf.left(sf.left(f))), state_hue);
 			}
@@ -366,7 +366,10 @@ public class JColour2 {
 
     public java.util.ArrayList<Integer> getEventualities_AU() {
 	Subformulas sf = JHueEnum.e.sf;
-	return JHueEnum.e.int2Hue(state_hue).getEventualities_AU();
+	ArrayList ev = JHueEnum.e.int2Hue(state_hue).getEventualities_AU();
+	if (state_E != -1 && sf.topChar(state_E) == 'I') 
+	    ev.add(state_E);
+	return ev;
     }
     public java.util.ArrayList<Integer> getEventualities_AU2() {
 	Subformulas sf = JHueEnum.e.sf;

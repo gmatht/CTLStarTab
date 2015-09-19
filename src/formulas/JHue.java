@@ -96,7 +96,7 @@ public class JHue extends java.util.BitSet {
 			}
 
 			super.set(i);
-			if (JNode.log) JNode.out.println("set: "+formulaToString(i));
+			//if (JNode.log) JNode.out.println("set: "+formulaToString(i));
 			//if (JNode.use_no_star && Subformulas.state_formula(i)) return;
 			switch (sf.topChar(i)) {
 			case '&': set(sf.right(i)); set(sf.left(i)); break;
@@ -193,7 +193,7 @@ public class JHue extends java.util.BitSet {
         public ArrayList<Integer> addEventualities(ArrayList<Integer> e) {
 
             for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1)) {
-                if (sf.topChar(j)=='U'||sf.topChar(j)=='Y'||sf.topChar(j)=='I') {
+                if (sf.topChar(j)=='U'||sf.topChar(j)=='Y') {
                     if (!get(sf.right(j))) {
                         e.add(sf.right(j));
                     }
@@ -215,7 +215,10 @@ public class JHue extends java.util.BitSet {
             for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1)) {
 		int fS = sf.followString(j,"Y-");
 		if (fS >= 0 && !get(sf.negn(sf.left(fS))))
-		    e.add(j);
+		    e.add(j); //Note we add j rather than right(j) as above
+                //if (sf.topChar(j)=='I') 
+                //    if (!get(sf.right(j))) 
+                //        e.add(j);
             }
 
             return e;

@@ -476,7 +476,9 @@ public class JNode {
         if (b == null) {
         	throw new RuntimeException("b is null ," + col.hasContradiction() + pruned + isleaf);
         }
+	JNode.out.println ("XYZ");
         while ((!b.isFull()) && (!b.isCovered())) {
+		JNode.out.println ("XYZ1");
             //while ((
             //while ((child=b.addchild())!=null) {)!=null) {
             //System.out.println("adding child");
@@ -491,6 +493,7 @@ public class JNode {
             }
         }
         if (!b.isCovered()) {
+		JNode.out.println ("XYZr21");
             return false;
         }
         update_eventualities();

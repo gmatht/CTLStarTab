@@ -226,11 +226,12 @@ public class JBMain implements Runnable {
                 }
                 S = new LinkedList<JNode>(JNode.uncovered);
 
-                JNode.out.println("\nCovering Nodes(" + S.size() + ")");
+                JNode.out.println("\nCovering Nodes (" + S.size() + ")");
                 for (JNode n : S) {
                 	n.col.check();
                     n.log_complete(1, "!");
                 }
+                JNode.out.println("\nCovering Nodes XXX (" + S.size() + ")");
                 //if ((JNode.uncovered.isEmpty()) && (JNode.unfulfilled.isEmpty())){
                 //We should remove these from the final version
                 redo_eventualities(node);

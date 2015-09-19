@@ -120,7 +120,7 @@ public abstract class JBranch {
 
     // x index of -Y (-AU) formula
     // y -1 or index of Y (AU) or U formula
-    public JNode satsifiedBy_AU(int x, int y) {
+    public JNode satsifiedBy_AUY(int x, int y) {
 	JHueEnum e = JHueEnum.e;
       Subformulas sf = e.sf;
 	int f = sf.negn(sf.left(sf.left(x))); //x = -(aYb) -> f =-a
@@ -147,16 +147,33 @@ public abstract class JBranch {
 	    if (e.int2Hue(col.state_hue).get(f2)  ) return parent;
 	    if (e.int2Hue(col.hues[0]).get(f2)) return parent;
 	}
+	return null;
+    }
 
-        //update_eventuality0(f);
-        //sat_by = satisfied_by_AU.get(new Pair(x,y));
+    public JNode satsifiedBy_AUI(int x) {
+	JHueEnum e = JHueEnum.e;
+      Subformulas sf = e.sf;
+      int y=-1;
+	int f = (sf.right(x)); //x = (aIb) -> f b 
+	if (e.int2Hue(col.state_hue).get(f)) return parent;
+	return null;
+    }
+   
+    public JNode satsifiedBy_AU(int x, int y) {
 	JNode sat_by = satisfied_by_AU.get(new Pair(x,y));
-        if (sat_by != null) {
-                if (sat_by.pruned) {
+	Subformulas sf = JHueEnum.e.sf;
+	switch (sf.topChar(x)) {
+	    case 'I': assert y==-1; sat_by = satsifiedBy_AUI(x); break;
+	    case '-': sat_by= satsifiedBy_AU(x,y); break;
+	    default:  throw new RuntimeException("Invalid AU Eventuality");
+	}
+	if (sat_by != null) return sat_by;
+	 sat_by = satisfied_by_AU.get(new Pair(x,y));
+        if (sat_by != null && sat_by.pruned) {
                     return null;
-                }
         }
         return sat_by;
+
     }
 
     public JNode satsifiedBy_D(int f) {
@@ -198,7 +215,7 @@ public abstract class JBranch {
             }
         }
         if (sat_by == null) {
-            for (JNode c : eChildren()) { FIXME: need to determine if I type eventuality
+            for (JNode c : eChildren()) { 
                 if (c.b != null && !c.pruned) {
                     sat_by = c.b.satsifiedBy(f);
                     if (sat_by != null) {
@@ -257,17 +274,18 @@ public abstract class JBranch {
             if (update_eventuality(i)) { updated = true; }
         }
 	if (!JNode.use_no_star) return updated;
-	JHue sh = JHueEnum.e.int2Hue(col.state_hue);
-        e = sh.getEventualities_AU();
+	//JHue sh = JHueEnum.e.int2Hue(col.state_hue);
+        //e = sh.getEventualities_AU();
+	e = col.getEventualities_AU();
 	ArrayList<Integer> e2 = col.getEventualities_AU2();
         for (int i : e) {
-	    for (int j : e2) {
+	    {if (JHueEnum.e.sf.topChar(i) != 'I') for (int j : e2) {
 		JNode.out.println("("+i+","+j+")");
             	if (update_eventuality_AU(i,j)) { updated = true; }
-            }
+            }}
             if (update_eventuality_AU(i,-1)) { updated = true; }
         }
-        //if (updated) parent.update_eventualities();
+        if (updated) parent.update_eventualities();
         return updated;
     }
     ArrayList<JNode> children = new ArrayList<JNode>();
@@ -703,7 +721,7 @@ final class JBinaryBranch extends JDisjunctBranch {
             throw new NullPointerException();
         }
 	assert(col.state_hue != 0);
-	JNode.out.println("FOO: "+col.state_hue);
+	//JNode.out.println("FOO: "+col.state_hue);
         Subformulas sf = JHueEnum.e.sf;
         switch (i) {
             //Left hand side of or is true
@@ -737,7 +755,7 @@ final class JBinaryBranch extends JDisjunctBranch {
 
         children.add(node);
 
-	JNode.out.println("FOO: "+col.state_hue);
+	//JNode.out.println("FOO: "+col.state_hue);
         update_eventualities();
         //System.out.format("Jor %d : %s\n", i, c.toString());
         return node;
