@@ -447,6 +447,7 @@ final class JE extends JDisjunctBranch {
                                 }
 
                             }
+			    if (he.h_has_f(c.state_hue, neg)) E_satisfied = true;
                             //System.out.println("Found E");
 
                             if (!E_satisfied) {

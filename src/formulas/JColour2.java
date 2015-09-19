@@ -50,6 +50,7 @@ public class JColour2 {
     		//	System.out.println(""+h);
     		}
         }
+	assert (state_hue > 0 || !JNode.use_no_star); 
      }
 
     public JColour2(JHueEnum e, Subformulas sf) {
