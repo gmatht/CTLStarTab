@@ -544,14 +544,14 @@ public class JNode {
 	        //if (!JNode.use_no_star) 
 		{
 		    for (JNode c: eDecendants) {
-                    if (c.b!=null && c.b.eventualitiesSatsified()) {
+                    if (c.b!=null && c.b.eventualitiesSatsified() && !c.col.pruned) {
                         if (!b.eventualitiesSatsified()) {
                             out.println("???");
                             b.update_eventualities();
 
 //                            b.update_eventualities();                            
                             out.println(log_line(0,"@","#"));
-                            out.println(b.children.get(1).log_line(0,"",""));
+                            //out.println(b.children.get(1).log_line(0,"",""));
                             
                             //out.println(c.parents.e .parent.log_line(0,"",""));                            
                             out.println(c.log_line(0,"X","X"));

@@ -45,7 +45,7 @@ public abstract class JBranch {
 	if (!JNode.use_no_star) return true; 
         e = col.getEventualities_AU();
         for (int f : e) {
-            if (satsifiedBy_AU(f,-1) == null) {
+            if ((f == col.state_E) && satsifiedBy_AU(f,-1) == null) {
                 return false;
             }
         }

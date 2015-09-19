@@ -214,8 +214,10 @@ public class JHue extends java.util.BitSet {
 
             for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1)) {
 		int fS = sf.followString(j,"Y-");
-		if (fS >= 0 && !get(sf.negn(sf.left(fS))))
+		if (fS >= 0 && !get(sf.negn(sf.left(fS)))) {
 		    e.add(j); //Note we add j rather than right(j) as above
+		    //JNode.out.println("Added Y-/-AU eventuality "+JHue.formulaToString(j));
+		}
                 //if (sf.topChar(j)=='I') 
                 //    if (!get(sf.right(j))) 
                 //        e.add(j);
