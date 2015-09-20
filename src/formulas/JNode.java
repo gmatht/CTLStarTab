@@ -352,14 +352,18 @@ public class JNode {
             p = p + " "; //not efficient, but hey.
         }
         String type;
+	int bformula=-7;
+	int hue_index=-7;
         if (b!=null) {
             type=b.type();
+	    bformula=b.formula();
+	    hue_index=b.hue_index();
         } else {
             type="L";
         }
         //p = p + open_or_close + " " +  toString() +"."+col.hashCode() + " " + reason + " ";
         p = p + open_or_close + " " +  toString() + " " + reason + " ";
-        p += col.toString();
+        p += col.toString(hue_index, bformula);
 
         p += " P:" + parentNodesAsString();
 
@@ -477,9 +481,9 @@ public class JNode {
         if (b == null) {
         	throw new RuntimeException("b is null ," + col.hasContradiction() + pruned + isleaf);
         }
-	JNode.out.println ("XYZ");
+	//JNode.out.println ("XYZ");
         while ((!b.isFull()) && (!b.isCovered())) {
-		JNode.out.println ("XYZ1");
+		//JNode.out.println ("XYZ1");
             //while ((
             //while ((child=b.addchild())!=null) {)!=null) {
             //System.out.println("adding child");
@@ -494,7 +498,7 @@ public class JNode {
             }
         }
         if (!b.isCovered()) {
-		JNode.out.println ("XYZr21");
+		//JNode.out.println ("XYZr21");
             return false;
         }
         update_eventualities();

@@ -93,22 +93,23 @@ public class JColour2 {
 	assert(!JNode.use_no_star);
     }
 
-    public String toString() {
+    public String toString(int hue_index, int formula) {
     	
     	String e = "";
-
         JHueEnum he = JHueEnum.e;
         //String s="C:{" + Integer.toString(hues[0]);
         String s="C:";
+	//s += hue_index +" ";
+	//if (formula >=0) s+=JHue.formulaToString(formula);
 	if (state_E != -1) {
 		s = s + " e: "+JHue.formulaToString(state_E)+" ";
 	}
 	if (JNode.use_no_star) {
 	    	assert(state_hue>=0);
-		if (state_hue>=0) s = s + " [" + he.toString(state_hue) + "] ";
+		if (state_hue>=0) s = s + " [" + he.toString (state_hue,(hue_index==-1), formula) + "] ";
 		else s = s + " [?] ";
 	}
-	s = s + "{" + he.toString(hues[0]);
+	s = s + "{" + he.toString(hues[0], (hue_index==0), formula);
         for (int i = 1; i < num_hues; i++) {
             if (JNode.use_optional_hues) {
             	if (JHueEnum.e.isEssential(hues[i])) {
@@ -117,11 +118,17 @@ public class JColour2 {
             		e="";
             	}
             }
-            //s=s+", "+Integer.toString(hues[i]);
-            s = s + ", " + e +  he.toString(hues[i]);
+	    String prefix="";
+	    if (i==hue_index) prefix = "** ";
+
+            s = s + ", " + e + prefix + he.toString(hues[i], (hue_index==i), formula);
         }
         s = s + '}';
         return s;
+    }
+
+    public String toString() {
+	return toString(-3,-3);
     }
 
     public JColour2(JColour2 c) {

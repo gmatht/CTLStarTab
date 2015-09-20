@@ -262,6 +262,7 @@ public class JHue extends java.util.BitSet {
 						  succ.set(j);
 					      break;
 					      case 'X': succ.set(sf.negn(sf.left(k)));
+							JNode.out.println("SET: " + JHue.formulaToString( (sf.negn(sf.left(k))) ));
 					  }
 				}
 			}
@@ -314,17 +315,23 @@ public class JHue extends java.util.BitSet {
             //return JHueEnum.e.ft.getSubformulas()[f].toString();
         }
 
-public String toString() {
+public String toString(int formula) {
 	String s="{";
         String comma="";
+	int nformula=-8;
+	if (formula >= 0) nformula=JHueEnum.e.sf.negn(formula);
 	for (int i=nextSetBit(0); i!=-1 ;i=nextSetBit(i+1)) {
+	    if (i==formula || JHueEnum.e.sf.negn(i)==formula || i==nformula)
+		s+=comma+"* "+formulaToString(i);
+	    else 
 		s+=comma+formulaToString(i);
-                comma=", ";
+            comma=", ";
 	}
 	s=s+"}";
 
 	return s;
 }
+public String toString() { return toString(-6); };
 
 private int hashCode_() {
 	return super.hashCode();

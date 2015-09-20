@@ -115,13 +115,15 @@ public class Subformulas {
 	for(int i=0;i<len;i++){
 		//path_sensitive[i]=false;
 		//if (full_op[i]) {
-			if(path_sensitive[neg[i]]) {path_sensitive[i]=true;}
 			//if(temporal_op[i]) {
 			if(!state_formula[i]) {
 				path_sensitive[i]=true;
 				if (left [i]>=0) path_sensitive[left[i] ]=true;
 				if (right[i]>=0) path_sensitive[right[i]]=true;
 			}
+
+			if(path_sensitive[neg[i]]) {path_sensitive[i]=true;}
+			if(path_sensitive[i]) {path_sensitive[neg[i]]=true;}
 			//if (topChar[i] == 'A' || (topChar[i] == '-' && topChar[left[i]] == 'A')) path_sensitive[i]=true; //May not be needed?
 		//}
 	}}

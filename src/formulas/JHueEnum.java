@@ -79,7 +79,7 @@ public class JHueEnum {
 	 * @return
 	 */
 	
-	public String toString(int h){
+	public String toString(int h, boolean use_flags, int formula){
 		if (h==0) {
 			return "FALSE";
 		}
@@ -88,8 +88,12 @@ public class JHueEnum {
 		if (jh==null) {
 			System.out.format("NULL %s\n",h);
 		}
-
+		if (use_flags) return int2hue.get(h).toString(formula);
 		return int2hue.get(h).toString();
+	}
+
+	public String toString(int h){
+	    return toString(h, false, -5);
 	}
 	
 	public int addFormula2Hue(int f, int h) {

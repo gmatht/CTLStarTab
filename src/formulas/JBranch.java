@@ -27,6 +27,9 @@ public abstract class JBranch {
         return children.size();
     }
 
+    public int formula()  { return -2; }
+    public int hue_index(){ return -2; }
+
     /**
      * Set of children than can be used to satisfy eventualities.
      * @return
@@ -281,7 +284,7 @@ public abstract class JBranch {
 	ArrayList<Integer> e2 = col.getEventualities_AU2();
         for (int i : e) {
 	    {if (JHueEnum.e.sf.topChar(i) != 'I') for (int j : e2) {
-		JNode.out.println("("+i+","+j+")");
+		//JNode.out.println("("+i+","+j+")");
             	if (update_eventuality_AU(i,j)) { updated = true; }
             }}
             if (update_eventuality_AU(i,-1)) { updated = true; }
@@ -379,13 +382,18 @@ abstract class JDisjunctBranch extends JBranch {
 final class JE extends JDisjunctBranch {
 
     int E_formula; // The formula that must exist in some hue;
+    int hue_index; // only needed for logging
+
+    @Override public int formula()   { return E_formula; }
+    @Override public int hue_index() { return hue_index; }
 
     public String type() {
         return "E";
     }
 
-    public JE(JColour2 c, int f) {
+    public JE(JColour2 c, int f, int h) {
         col = c;
+	hue_index = h;
         max_children = c.num_hues;
         //System.out.format("dE\n");
         E_formula = f;
@@ -453,7 +461,7 @@ final class JE extends JDisjunctBranch {
 
                             if (!E_satisfied) {
                                 //System.out.format("JE %s,%d\n",c.toString(),neg);
-                                return new JE(c, neg);
+                                return new JE(c, neg, i);
                             }
                         }
                     }
@@ -712,6 +720,9 @@ final class JBinaryBranch extends JDisjunctBranch {
     public String type() {
         return rule.topString();
     }
+
+    @Override public int formula()   { return formula; }
+    @Override public int hue_index() { return hue_index; }
 
     public JBinaryBranch(JColour2 c, JBinaryRule r, int f, int hi) {
         //max_children = 4;
