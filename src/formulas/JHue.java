@@ -242,30 +242,49 @@ public class JHue extends java.util.BitSet {
 		//if(statehue) {
 		//	assert(JNode.use_no_star);
 		//} //else {
-			JHue succ=new JHue(statehue,this.sf);
-			for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1)) {
-				int t=j;
-				//if(statehue) {
-				//	if (sf.AE_no_star(j) && sf.topChar(j)=='A') t=sf.left(j);
-				//	else continue;
-				//}
+		JHue succ=new JHue(statehue,this.sf);
+		for (int j=this.nextSetBit(0);j>=0;j=nextSetBit(j+1)) {
+			int t=j;
+			//if(statehue) {
+			//	if (sf.AE_no_star(j) && sf.topChar(j)=='A') t=sf.left(j);
+			//	else continue;
+			//}
+			if (statehue) {
 				switch (sf.topChar(t)) {
-				    case 'U': case 'Y':
+				    case 'Y':
 					if (!get(sf.right(t))) {
 					    succ.set(j);
 					}
 					break;
-				    case 'X': case 'B': succ.set(sf.left(t)); break;
+				    case 'B': succ.set(sf.left(t)); break;
 				    case '-': int k=sf.left(t);
 					  switch (sf.topChar(k)) {
-					      case 'U': case 'I': if (!get(sf.negn(sf.left(k))))
+					      case 'I': if (!get(sf.negn(sf.left(k))))
 						  succ.set(j);
 					      break;
 					      case 'X': succ.set(sf.negn(sf.left(k)));
 							JNode.out.println("SET: " + JHue.formulaToString( (sf.negn(sf.left(k))) ));
-					  }
+				  	}
+				}
+			} else {
+				switch (sf.topChar(t)) {
+				    case 'U':
+					if (!get(sf.right(t))) {
+					    succ.set(j);
+					}
+					break;
+				    case 'X': succ.set(sf.left(t)); break;
+				    case '-': int k=sf.left(t);
+					  switch (sf.topChar(k)) {
+					      case 'U': if (!get(sf.negn(sf.left(k))))
+						  succ.set(j);
+					      break;
+					      case 'X': succ.set(sf.negn(sf.left(k)));
+							JNode.out.println("SET: " + JHue.formulaToString( (sf.negn(sf.left(k))) ));
+				  	}
 				}
 			}
+		}
 		//}
 		JNode.out.println(this.toString() + " X-> " + succ.toString() );
 		return succ;
