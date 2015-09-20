@@ -38,7 +38,9 @@ cd ..
 #java -enableassertions JApplet 'F-F(c>EGGXc)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'E-E(Xc|FE-c)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet '-(Xc|FE-c)' BCTLNEW VERB.out ; cat VERB.out
-java -enableassertions JApplet '-(AFa>XAFa)' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet '-(AFa>XAFa)' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'FG-XX(b>GEb)' BCTLNEW VERB.out ; cat VERB.out
+java -enableassertions JApplet 'X(-E(Eb|Fc)&b)' BCTLNEW VERB.out ; cat VERB.out
 echo foo
 #java JApplet  'AFGG--FEXb' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet  'E-A(Ec|(c>Ab))' BCTLNEW VERB.out ; cat VERB.out

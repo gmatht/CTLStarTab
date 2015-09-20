@@ -76,6 +76,12 @@ public class JColour2 {
 	    hues[0]=JHueEnum.e.hue2Int(h);
             normalise();
 
+	    for (int i = 0; i < sf.count();i++) {
+		String s=JHue.formulaToString(i);
+		if (sf.path_sensitive(i)) s+=" PathS";
+		if (sf.state_formula(i)) s+=" state_formula";
+		JNode.out.println(s);
+	    }
     }
 
     public JColour2(JHueEnum e, int h) {
@@ -255,6 +261,8 @@ public class JColour2 {
     
     public void normalise() {
         normalise_();
+        normalise_(); 
+        normalise_(); // make sure A formulas can go from path -> state ->path
         isNormalised=true;
     }
 
@@ -302,10 +310,15 @@ public class JColour2 {
 		    if (sf.state_formula(f)) Aformulas[f] =true;
                 }
             }
+			   JNode.out.println("Aformula: +JHue.formulaToString(f)"+toString());
 	    if (JNode.use_no_star) {
 		JHue h = he.int2Hue(state_hue);
 		for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
-			if (sf.state_formula(f)) Aformulas[f] =true;
+			JNode.out.println("Aformula1: "+JHue.formulaToString(f));
+			if (sf.state_formula(f)) { 
+			    Aformulas[f] =true; 
+			    JNode.out.println("Aformula: "+JHue.formulaToString(f));
+			}
 		}
 	    }
             for (int f = 0; f < num_subformulas; f++) {
@@ -315,6 +328,7 @@ public class JColour2 {
                         hues[j] = he.addFormula2Hue(f, hues[j]);
 		    	if (sf.topChar(f) == 'A') {
 				hues[j] = he.addFormula2Hue(sf.left(f), hues[j]);
+				hues[j] = he.addFormula2Hue(f, hues[j]);
 			}
                     }
 		    if (JNode.use_no_star) {
