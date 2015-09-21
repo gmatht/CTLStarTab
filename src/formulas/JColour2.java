@@ -261,8 +261,10 @@ public class JColour2 {
     
     public void normalise() {
         normalise_();
-        normalise_(); 
-        normalise_(); // make sure A formulas can go from path -> state ->path
+	if (JNode.use_no_star) {
+        	normalise_(); 
+        	normalise_(); // make sure A formulas can go from path -> state ->path
+	}
         isNormalised=true;
     }
 
