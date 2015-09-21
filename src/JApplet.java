@@ -50,7 +50,7 @@ public class JApplet extends javax.swing.JApplet {
 	} 
 
 	    
-    }
+    
     /** Initializes the applet JApplet */
     public void init() {
         try {

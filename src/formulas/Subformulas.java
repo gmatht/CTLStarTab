@@ -107,9 +107,9 @@ public class Subformulas {
 	for(int i=0;i<len;i++){
 	        state_formula[i]=state_formula_(i);
 		path_sensitive[i]=(!state_formula[i]);
-	   	if (state_formula[i]) {
-	   	System.out.print("  SF: "+topChar[i]);
-	   	} else System.out.print(" ~sf: "+topChar[i]);
+	   	//if (state_formula[i]) {
+	   	//System.out.print("  SF: "+topChar[i]);
+	   	//} else System.out.print(" ~sf: "+topChar[i]);
 	}
 	for(int j=0;j<len*2;j++){ //so it converges
 	for(int i=0;i<len;i++){
@@ -128,10 +128,10 @@ public class Subformulas {
 		//}
 	}}
 	System.out.println("");
-	for(int i=0;i<len;i++){
-	   	if (path_sensitive[i]) System.out.print("  PS: "+topChar[i]);
-		else System.out.print(" ~ps: "+topChar[i]);
-	}
+	//for(int i=0;i<len;i++){
+	//   	if (path_sensitive[i]) System.out.print("  PS: "+topChar[i]);
+	//	else System.out.print(" ~ps: "+topChar[i]);
+	//}
 
 	       
 	}//end createMaps

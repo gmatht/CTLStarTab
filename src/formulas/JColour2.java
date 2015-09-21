@@ -76,7 +76,7 @@ public class JColour2 {
 	    hues[0]=JHueEnum.e.hue2Int(h);
             normalise();
 
-	    for (int i = 0; i < sf.count();i++) {
+	    if (JNode.log) for (int i = 0; i < sf.count();i++) {
 		String s=JHue.formulaToString(i);
 		if (sf.path_sensitive(i)) s+=" PathS";
 		if (sf.state_formula(i)) s+=" state_formula";
@@ -174,13 +174,13 @@ public class JColour2 {
         hues = new int[num_hues];
 	JHueEnum e=JHueEnum.e;
 	if (JNode.use_no_star) {
-		JNode.out.println("AA: "+ e.toString(c.state_hue));
+		//JNode.out.println("AA: "+ e.toString(c.state_hue));
 		state_hue=e.temporalSuccessor(c.state_hue);
 		if (state_E >=0) {
-			JNode.out.println("AB: "+ e.toString(state_hue)+" + "+JHue.formulaToString(state_E));
+			//JNode.out.println("AB: "+ e.toString(state_hue)+" + "+JHue.formulaToString(state_E));
 			state_hue = e.addFormula2Hue(state_E, state_hue);
 		}
-		JNode.out.println("AC: "+ e.toString(state_hue));
+		//JNode.out.println("AC: "+ e.toString(state_hue));
 	}
 	if (i0>0) hues[0]   = e.temporalSuccessor(c.hues[0]);
         //hues[0]=he.temporalSuccessor(c.hues[0]);
@@ -310,14 +310,14 @@ public class JColour2 {
 		    if (sf.state_formula(f)) Aformulas[f] =true;
                 }
             }
-			   JNode.out.println("Aformula: +JHue.formulaToString(f)"+toString());
+			   //JNode.out.println("Aformula: +JHue.formulaToString(f)"+toString());
 	    if (JNode.use_no_star) {
 		JHue h = he.int2Hue(state_hue);
 		for (int f = h.nextSetBit(0); f != -1; f = h.nextSetBit(f + 1)) {
-			JNode.out.println("Aformula1: "+JHue.formulaToString(f));
+			//JNode.out.println("Aformula1: "+JHue.formulaToString(f));
 			if (sf.state_formula(f)) { 
 			    Aformulas[f] =true; 
-			    JNode.out.println("Aformula: "+JHue.formulaToString(f));
+			    //JNode.out.println("Aformula: "+JHue.formulaToString(f));
 			}
 		}
 	    }

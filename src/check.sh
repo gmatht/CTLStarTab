@@ -1,3 +1,4 @@
+#mkdir v1.0; git --work-tree v1.0 checkout v1.0 -- src# (cd v1.0/src/formulas/ && javac *.java; cd .. javac *.java)
 i=1
 if [ ! -z "$1" ]
 then

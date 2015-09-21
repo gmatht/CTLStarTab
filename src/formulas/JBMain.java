@@ -184,11 +184,11 @@ public class JBMain implements Runnable {
         boolean problem_occured = false;
         int ret_status=3;
         boolean satisfiable;
-         JNode.out.println("\nDEBUG1");
+         //JNode.out.println("\nDEBUG1");
 
-	JNode.out.println("--features--");
-	if (JNode.use_optional_hues) JNode.out.println("use_optional_hues");
-	if (JNode.use_hue_tableau) JNode.out.println("use_hue_tableau");
+	//JNode.out.println("--features--");
+	//if (JNode.use_optional_hues) JNode.out.println("use_optional_hues");
+	//if (JNode.use_hue_tableau) JNode.out.println("use_hue_tableau");
 
         try {
             JNode.static_reset();
@@ -208,7 +208,7 @@ public class JBMain implements Runnable {
             JNode node = JNode.getNode(c);
 
             long time_wasted = 0;
-         	JNode.out.println("\nDEBUG2");
+         	//JNode.out.println("\nDEBUG2");
             node.complete();
             redo_eventualities(node);
             while (!JNode.isTableauComplete()) {
