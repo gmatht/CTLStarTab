@@ -80,7 +80,7 @@ public abstract class JBranch {
             else { s+=comma+JHue.formulaToString(f)+":"+sat_by.toString(); }
             comma=", ";
 	    ArrayList<Integer> e2 = col.getEventualities_AU2();
-	    for (int f2 : e2) {
+	    if (JHueEnum.e.sf.topChar(f) != 'I') for (int f2 : e2) {
 		String evStr= "("+JHue.formulaToString(f)+", "+JHue.formulaToString(f2)+")";
 		sat_by=satsifiedBy_AU(f,f2);
             	if (sat_by == null) { s+=comma+evStr+":0"; } 
@@ -166,7 +166,7 @@ public abstract class JBranch {
 	JNode sat_by = satisfied_by_AU.get(new Pair(x,y));
 	Subformulas sf = JHueEnum.e.sf;
 	switch (sf.topChar(x)) {
-	    case 'I': assert y==-1; sat_by = satsifiedBy_AUI(x); break;
+	    case 'I': assert y<=-1; sat_by = satsifiedBy_AUI(x); break;
 	    case '-': sat_by= satsifiedBy_AUY(x,y); break;
 	    default:  throw new RuntimeException("Invalid AU Eventuality");
 	}
