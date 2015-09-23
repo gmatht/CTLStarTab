@@ -508,6 +508,8 @@ final class JChooseHue extends JBranch {
     }
 
     public boolean eIsFull() {
+	if (JNode.use_no_star) {return isFull();} // TODO: this is rather inefficient. I should probably fix
+	//if (col.state_E > -1) {return isFull();}
         return (num_children_created() > 0);
     }
 
