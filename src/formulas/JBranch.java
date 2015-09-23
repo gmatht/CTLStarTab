@@ -40,7 +40,7 @@ public abstract class JBranch {
 
     public boolean eventualitiesSatsified() {
         ArrayList<Integer> e = col.getEventualities();
-        for (int f : e) {
+        if (col.state_E < 0) for (int f : e) {
             if (satsifiedBy(f) == null) {
                 return false;
             }
@@ -187,10 +187,11 @@ public abstract class JBranch {
             JNode sat_by = satisfied_by_D.get(f);
             if (sat_by != null) {
                 if (sat_by.pruned) {
-                   // return null;
+                    return null;
                 }
             }
-            return satisfied_by.get(f);
+	    return sat_by;
+            //return satisfied_by.get(f);
         }
     }
 
@@ -277,7 +278,10 @@ public abstract class JBranch {
         for (int i : e) {
             if (update_eventuality(i)) { updated = true; }
         }
-	if (!JNode.use_no_star) return updated;
+	if (!JNode.use_no_star) {
+            if (updated) parent.update_eventualities();
+	    return updated;
+	}
 	//JHue sh = JHueEnum.e.int2Hue(col.state_hue);
         //e = sh.getEventualities_AU();
 	e = col.getEventualities_AU();
@@ -289,7 +293,6 @@ public abstract class JBranch {
             }}
             if (update_eventuality_AU(i,-1)) { updated = true; }
         }
-        if (updated) parent.update_eventualities();
         return updated;
     }
     ArrayList<JNode> children = new ArrayList<JNode>();
@@ -604,9 +607,11 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             max_children=Integer.MAX_VALUE;
         } else {
 	    //max_children = 1 << (c.num_hues - 1);
-	    if (c.state_E > -1) max_children = 1 << (c.num_hues - 1);
+	    if (c.state_E == -1) max_children = 1 << (c.num_hues - 1);
             else                max_children = (1 << (c.num_hues    )) - 1;
         }
+
+	JNode.out.println("T " + toString() + " m" + max_children + " h" + c.num_hues + " sE" + c.state_E);
     }
 
     @Override
@@ -727,6 +732,7 @@ final class JBinaryBranch extends JDisjunctBranch {
     public JBinaryBranch(JColour2 c, JBinaryRule r, int f, int hi) {
         //max_children = 4;
         max_children = 3;
+	if (hi==0) max_children=4;
         rule = r;
         formula = f;
         hue_index = hi;
@@ -743,6 +749,8 @@ final class JBinaryBranch extends JDisjunctBranch {
 	assert(col.state_hue != 0);
 	//JNode.out.println("FOO: "+col.state_hue);
         Subformulas sf = JHueEnum.e.sf;
+	JNode.out.println(i);
+		JNode.out.println("COL0: "+col.toString());
         switch (i) {
             //Left hand side of or is true
             case 0:
@@ -756,11 +764,25 @@ final class JBinaryBranch extends JDisjunctBranch {
                 break;
             // Both left and right are true, but in different hues.
             case 2:
+		//JNode.out.println("COL1: "+col.toString());
                 int new_hue = JHueEnum.e.addFormula2Hue(rule.left_choice(formula), col.hues[hue_index]);
+		//JNode.out.println("COL2: "+col.toString());
                 c = new JColour2(col, new_hue);
+		//JNode.out.println("COL3: "+col.toString());
+		//JNode.out.println("COL4: "+c.toString());
                 c.assert_formula(hue_index, rule.right_choice(formula));
-                break;
+		//JNode.out.println("COL5: "+c.toString());
+		//JNode.out.println("NEW: "+JHueEnum.e.toString(new_hue));
+		//JNode.out.println("OLD: "+JHueEnum.e.toString(c.hues[hue_index]));
+                break;/*
              case 3:
+                new_hue = JHueEnum.e.addFormula2Hue(rule.right_choice(formula), col.hues[hue_index]);
+                c = new JColour2(col, new_hue);
+                c.assert_formula(hue_index, rule.left_choice(formula));
+                break;
+	*/
+		//This fix may have to be backported to v1.0
+            case 3:
                 new_hue = JHueEnum.e.addFormula2Hue(rule.right_choice(formula), col.hues[hue_index]);
                 c = new JColour2(col, new_hue);
                 c.assert_formula(hue_index, rule.left_choice(formula));
@@ -770,14 +792,18 @@ final class JBinaryBranch extends JDisjunctBranch {
         }
 //		num_children_created++;
         c.normalise();
+		JNode.out.println("COL6: "+c.toString());
        
         JNode node = JNode.getNode(c, this);
+	JNode.out.println("COL7: "+node.col.toString());
 
         children.add(node);
+	JNode.out.println("COL8: "+node.col.toString());
 
 	//JNode.out.println("FOO: "+col.state_hue);
         update_eventualities();
         //System.out.format("Jor %d : %s\n", i, c.toString());
+	JNode.out.println("COL9: "+node.col.toString());
         return node;
     }
 

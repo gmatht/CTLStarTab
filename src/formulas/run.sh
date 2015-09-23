@@ -10,6 +10,7 @@ echo  --------------------------------------------------------------------------
 javac FormulaTree.java AUXLogic.java Pair.java JColour2.java JBranch.java  JNode.java  JHue.java JHueEnum.java Subformulas.java Timeout.java Symbol.java FormulaTree.java JHNode.java JHBranch.java TreeNode.java ParseException.java Tokenizer.java  Logic.java ClosureSubset2.java PosSubF.java && (
 
 cd ..
+rm VERB.out
 #java JApplet '(Bp)Y(Bq)&(B-p)&(B-q)' ; cat default.out
 #java JApplet '(pYq)&AG-q' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet '(pYq)&G-q' BCTLNEW VERB.out ; cat VERB.out
@@ -47,7 +48,8 @@ cd ..
 #java -enableassertions JApplet 'A-GF(a>AGa)' BCTLNEW VERB.Eout ; cat VERB.out
 #java -enableassertions JApplet 'AFG-(a>AGa)' BCTLNEW VERB.Eout ; cat VERB.out
 #java -enableassertions JApplet 'F-X((cUFa)>Fa)' BCTLNEW VERB.Eout ; cat VERB.out
-java -enableassertions JApplet 'AFG(a&EF-a)' BCTLNEW VERB.Eout ; cat VERB.out
+#java -enableassertions JApplet 'a&EX-a&AFG(a&EX-a)' BCTLNEW VERB.out ; cat VERB.out
+java -enableassertions JApplet 'AFG(a&EX-a)' BCTLNEW VERB.out ; cat VERB.out
 echo foo
 #java JApplet  'AFGG--FEXb' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet  'E-A(Ec|(c>Ab))' BCTLNEW VERB.out ; cat VERB.out

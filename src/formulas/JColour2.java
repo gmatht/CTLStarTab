@@ -177,8 +177,11 @@ public class JColour2 {
 		//JNode.out.println("AA: "+ e.toString(c.state_hue));
 		state_hue=e.temporalSuccessor(c.state_hue);
 		if (state_E >=0) {
+		    	int add=state_E;
 			//JNode.out.println("AB: "+ e.toString(state_hue)+" + "+JHue.formulaToString(state_E));
-			state_hue = e.addFormula2Hue(state_E, state_hue);
+			int L=e.sf.left(state_E);
+			if (e.sf.topChar(state_E) =='-' && e.sf.topChar(L)=='B' ) add = e.sf.negn(e.sf.left(L));
+			state_hue = e.addFormula2Hue(add, state_hue);
 		}
 		//JNode.out.println("AC: "+ e.toString(state_hue));
 	}

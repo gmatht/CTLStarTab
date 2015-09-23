@@ -367,10 +367,11 @@ public class JNode {
 
         p += " P:" + parentNodesAsString();
 
-        if (!">".equals(open_or_close)) {
+        //if (!">".equals(open_or_close)) {
             p += " D:" + directDecendantsAsString();
-        }
+        //}
         if (b!=null) p += " S:" + b.eventualityString();
+        if (b!=null) p+=" "+b.num_children_created()+"/"+b.max_children;
 
         return p;
     }
@@ -540,6 +541,8 @@ public class JNode {
 
             if (!b.eventualitiesSatsified()) {
                 // We must have built all eDecendants and still not been able to satisfy our eventualities
+               if (log) out.println("Could not fulfill "+toString() + ", pruning;");
+               if (log) out.println(log_line(1,"@","@"));
                if (log) out.println("Could not fulfill "+toString() + ", pruning;");
                 /*if (JNode.use_no_star) {
 		    for (JNode c: eDecendants) {

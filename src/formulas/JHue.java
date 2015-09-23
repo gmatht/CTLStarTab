@@ -170,7 +170,8 @@ public class JHue extends java.util.BitSet {
 		int L=sf.left(j); char c=sf.topChar(j);
 		if ( c=='I' && (!get(sf.right(j))) )                  e.add(j);
 		if ( c=='-' && sf.topChar(L)=='Y' && !get(sf.negn(sf.left(L)))) e.add(j);
-		if ( c=='-' && sf.topChar(L)=='B' ) e.add(sf.negn(sf.left(L)));
+		//if ( c=='-' && sf.topChar(L)=='B' ) e.add(sf.negn(sf.left(L)));
+		if ( c=='-' && sf.topChar(L)=='B' ) e.add(j);
             }
 
 	    JNode.out.print (toString() + " ENS-> ");
