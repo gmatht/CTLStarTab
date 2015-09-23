@@ -23,9 +23,9 @@ do
 	#echo if  "`grep sat /tmp/old.out`" != "`grep sat /tmp/new.out`" 
 	if [ "`grep sat /tmp/old.$i.out`" != "`grep sat /tmp/new.$i.out`" ] 
 	then
+	    	printf "\r"
 		echo "$i	$formula	| `grep sat /tmp/old.$i.out` != `grep sat /tmp/new.$i.out`" | tee -a $PROBLEMS 
 		mv /tmp/old.$i.out /tmp/new.$i.out problems.dir
-		echo
 	fi
 	i=$((i+1))
 done

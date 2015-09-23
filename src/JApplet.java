@@ -48,6 +48,7 @@ public class JApplet extends javax.swing.JApplet {
 		default:
 		System.out.println("Usage: java JApplet formula [BCTLNEW|BCTLOLD|CTL] outputfile\n");
 	} 
+    }
 
 	    
     

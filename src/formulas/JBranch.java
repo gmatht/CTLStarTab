@@ -613,7 +613,7 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             else                max_children = (1 << (c.num_hues    )) - 1;
         }
 
-	JNode.out.println("T " + toString() + " m" + max_children + " h" + c.num_hues + " sE" + c.state_E);
+	//JNode.out.println("T " + toString() + " m" + max_children + " h" + c.num_hues + " sE" + c.state_E);
     }
 
     @Override

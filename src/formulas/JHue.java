@@ -287,7 +287,7 @@ public class JHue extends java.util.BitSet {
 			}
 		}
 		//}
-		JNode.out.println(this.toString() + " X-> " + succ.toString() );
+		//JNode.out.println(this.toString() + " X-> " + succ.toString() );
 		return succ;
 	}
 

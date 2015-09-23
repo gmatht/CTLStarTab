@@ -54,6 +54,7 @@ public class JColour2 {
      }
 
     public JColour2(JHueEnum e, Subformulas sf) {
+	    //JNode.log = false; // I don't know where JNode is being forced to true, so just force it to false
             JHue h = new JHue(sf);
             num_hues = 2;
             hues = new int[2];

@@ -52,7 +52,9 @@ rm VERB.out
 #java -enableassertions JApplet 'AFG(a&EX-a)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGA(A((AaUb)U-b)&GFb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
-java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
+rm default.out
+java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW default.out ; cat default.out
 echo foo
 #java JApplet  'AFGG--FEXb' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet  'E-A(Ec|(c>Ab))' BCTLNEW VERB.out ; cat VERB.out
