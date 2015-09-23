@@ -751,8 +751,8 @@ final class JBinaryBranch extends JDisjunctBranch {
 	assert(col.state_hue != 0);
 	//JNode.out.println("FOO: "+col.state_hue);
         Subformulas sf = JHueEnum.e.sf;
-	JNode.out.println(i);
-		JNode.out.println("COL0: "+col.toString());
+	//JNode.out.println(i);
+		//JNode.out.println("COL0: "+col.toString());
         switch (i) {
             //Left hand side of or is true
             case 0:
@@ -794,18 +794,18 @@ final class JBinaryBranch extends JDisjunctBranch {
         }
 //		num_children_created++;
         c.normalise();
-		JNode.out.println("COL6: "+c.toString());
+		//JNode.out.println("COL6: "+c.toString());
        
         JNode node = JNode.getNode(c, this);
-	JNode.out.println("COL7: "+node.col.toString());
+	//JNode.out.println("COL7: "+node.col.toString());
 
         children.add(node);
-	JNode.out.println("COL8: "+node.col.toString());
+	//JNode.out.println("COL8: "+node.col.toString());
 
 	//JNode.out.println("FOO: "+col.state_hue);
         update_eventualities();
         //System.out.format("Jor %d : %s\n", i, c.toString());
-	JNode.out.println("COL9: "+node.col.toString());
+	//JNode.out.println("COL9: "+node.col.toString());
         return node;
     }
 

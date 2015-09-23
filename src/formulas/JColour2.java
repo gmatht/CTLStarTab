@@ -225,9 +225,9 @@ public class JColour2 {
     public void assert_formula(int index_of_hue, int f) {
         JHueEnum he = JHueEnum.e;
 	if (index_of_hue==-1) {
-		JNode.out.println(he.toString(state_hue) + " a-> " +he.toString(he.addFormula2Hue(f, state_hue)));
+		//JNode.out.println(he.toString(state_hue) + " a-> " +he.toString(he.addFormula2Hue(f, state_hue)));
 		state_hue=he.addFormula2Hue(f, state_hue);
-		JNode.out.println(he.toString(state_hue) + " -<a");
+		//JNode.out.println(he.toString(state_hue) + " -<a");
 	} else {
 	        int h = hues[index_of_hue];
         	int h_plus_f = he.addFormula2Hue(f, h);

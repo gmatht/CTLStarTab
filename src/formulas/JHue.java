@@ -174,9 +174,9 @@ public class JHue extends java.util.BitSet {
 		if ( c=='-' && sf.topChar(L)=='B' ) e.add(j);
             }
 
-	    JNode.out.print (toString() + " ENS-> ");
+	    /*JNode.out.print (toString() + " ENS-> ");
 	    for (int i: e) { JNode.out.print(formulaToString(i)+", "); }
-	    JNode.out.println ("");
+	    JNode.out.println ("");*/
             return e;
 
         }
