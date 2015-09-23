@@ -15,18 +15,35 @@ do
 	#echo ----------------------------------------------------------------
 	printf " $i:%s\r" "	$formula              "
 (
-	java JApplet $formula BCTLNEW /tmp/new.$i.out &
-	(cd v1.0/src && java JApplet ''$formula BCTLNEW /tmp/old.$i.out) &
+	timeout 10 java JApplet $formula BCTLNEW /tmp/new.$i.out 2> /tmp/new.$i.out.err &
+	(cd v1.0/src && timeout 10 java JApplet ''$formula BCTLNEW /tmp/old.$i.out > /tmp/old.$i.out.err) &
 	wait
 ) 2> /dev/null > /dev/null
 	#echo
 	#echo if  "`grep sat /tmp/old.out`" != "`grep sat /tmp/new.out`" 
+
+	mkdir -p all
+	if grep unsat /tmp/old.$i.out /tmp/new.$i.out > /dev/null 2> /dev/null
+	then
+		echo "$i        $formula" >> all/unsatisfiable.txt
+	elif grep is.sat /tmp/old.$i.out /tmp/new.$i.out > /dev/null 2> /dev/null
+	then
+		echo "$i        $formula" >> all/satisfiable.txt
+	else
+		echo "$i        $formula" >> all/unknown.txt
+	fi
+
 	if [ "`grep sat /tmp/old.$i.out`" != "`grep sat /tmp/new.$i.out`" ] 
 	then
 		echo "$i	$formula	| `grep sat /tmp/old.$i.out` != `grep sat /tmp/new.$i.out`" | tee -a $PROBLEMS 
-		mv /tmp/old.$i.out /tmp/new.$i.out problems.dir
+		mv /tmp/old.$i.out* /tmp/new.$i.out* problems.dir
 		echo
+	else
+		true
+		rm /tmp/old.$i.out* /tmp/new.$i.out*
 	fi
+
+		
 	i=$((i+1))
 done
 	
