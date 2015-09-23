@@ -329,8 +329,9 @@ public class JHue extends java.util.BitSet {
         //return JHueEnum.e.ft.getSubformulas()[f].toString();
     }
         public static String formulaToString(int f) {
-            // BUGGY: return JHueEnum.e.ft.getSubformulas()[f].abbrev().toString();
-        return JHueEnum.e.ft.getSubformulas()[f].toString();
+            // BUGGY: 
+	    return JHueEnum.e.ft.getSubformulas()[f].abbrev().toString();
+        //return JHueEnum.e.ft.getSubformulas()[f].toString();
             //return JHueEnum.e.ft.getSubformulas()[f].toString();
         }
 
