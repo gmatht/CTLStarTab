@@ -1,6 +1,12 @@
 #!/bin/bash
-alpha=q
-beta=q
+if [ $BENCH_MODE = "MIX" ]
+then
+	alpha=q
+	beta=q
+else
+	alpha=AFGq
+	beta=AFAGq
+fi
 
 for i in `seq 0 "$1"`
 do
@@ -25,8 +31,13 @@ do
 			echo $phi
 		fi
 	fi
-	
-	alpha=AFG$alpha
+
+	if [ $BENCH_MODE = "ORIG" ]
+	then
+		alpha=AFG$alpha
+	else 
+		alpha=AXAFAG$alpha
+	fi
 	beta=AFAG$beta
 	
 done
