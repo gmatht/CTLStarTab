@@ -1,5 +1,5 @@
 #!/bin/bash
-if [ $BENCH_MODE = "MIX" ]
+if [ "$BENCH_MODE" = "MIX" ]
 then
 	alpha=q
 	beta=q
@@ -32,7 +32,7 @@ do
 		fi
 	fi
 
-	if [ $BENCH_MODE = "ORIG" ]
+	if [ "$BENCH_MODE" = "ORIG" ]
 	then
 		alpha=AFG$alpha
 	else 
