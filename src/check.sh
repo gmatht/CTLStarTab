@@ -11,12 +11,16 @@ fi
 mkdir -p problems.dir
 while read formula
 do
+    	while [ `xprintidle` -lt 9999 ]
+	do
+	    sleep 5
+	done
 	rm /tmp/old.out /tmp/new.out 2> /dev/null
 	#echo ----------------------------------------------------------------
 	printf " $i:%s\r" "	$formula              "
 (
-	timeout 10 java JApplet $formula BCTLNEW /tmp/new.$i.out 2> /tmp/new.$i.out.err &
-	(cd v1.0/src && timeout 10 java JApplet ''$formula BCTLNEW /tmp/old.$i.out > /tmp/old.$i.out.err) &
+	timeout 5 java JApplet $formula BCTLNEW /tmp/new.$i.out 2> /tmp/new.$i.out.err &
+	(cd v1.0/src && timeout 5 java JApplet ''$formula BCTLNEW /tmp/old.$i.out > /tmp/old.$i.out.err) &
 	wait
 ) 2> /dev/null > /dev/null
 	#echo
