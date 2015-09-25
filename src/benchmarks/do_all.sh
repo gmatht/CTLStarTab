@@ -6,11 +6,11 @@ killset() {
     killall java
     killall time
     sleep 1
-    killall do_set.sh
-    killall java
-    killall time
+    killall -9 do_set.sh
+    killall -9 java
+    killall -9 time
 }
- 
+
 for BENCH_MODE in BCTL MIX ORIG
 do
 export BENCH_MODE
