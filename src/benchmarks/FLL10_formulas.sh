@@ -8,6 +8,24 @@ else
 	beta=AFAGq
 fi
 
+if [ "$BENCH_MODE" = "ORIG" ]
+then
+	alphaI=AFG
+else
+	alphaI=AXAFAG
+fi
+
+
+if [ $1 = 'f' ]
+then
+	psi="(($alphaI)^i$alpha>(AFAG)^i$beta)"
+	phi="(($alphaI)^i$alpha<(AFAG)^i$beta)"
+	#phi="((AFAG)^i$beta>($alphaI)^i$alpha)"
+	if [ "$2" != "N" ] ;then echo $psi; fi
+	if [ "$3" != "N" ] ;then echo $phi; fi
+	exit
+fi
+
 for i in `seq 0 "$1"`
 do
 	psi="($alpha>$beta)"
@@ -22,22 +40,11 @@ do
 			echo "s/\\b$beta/\\\\beta_$i/g"
 		fi
 	else
-		if [ "$2" != "N" ]
-		then	
-			echo $psi
-		fi
-		if [ "$3" != "N" ]
-		then
-			echo $phi
-		fi
+		if [ "$2" != "N" ] ;then echo $psi; fi
+		if [ "$3" != "N" ] ;then echo $phi; fi
 	fi
 
-	if [ "$BENCH_MODE" = "ORIG" ]
-	then
-		alpha=AFG$alpha
-	else 
-		alpha=AXAFAG$alpha
-	fi
+	alpha=$alphaI$alpha
 	beta=AFAG$beta
 	
 done
