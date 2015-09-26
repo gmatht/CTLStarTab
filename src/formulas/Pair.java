@@ -19,7 +19,7 @@ public final class Pair {
 	    assert(toInt(max_x,max_y)==i);
 	}
 
-	public toInt(int max_x, int max_y) {
+	public int toInt(int max_x, int max_y) {
 	    assert(x<max_x);
 	    assert(y<max_y);
 	    return(x+(y*max_x));
