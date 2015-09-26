@@ -1,3 +1,4 @@
+tput reset
 getmod () {
 	for f in "$@"
 	do
@@ -53,8 +54,14 @@ rm VERB.out
 #java -enableassertions JApplet 'EGA(A((AaUb)U-b)&GFb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'AF((b>X-Ab)&EGA(b&a))' BCTLNEW VERB.out ; cat VERB.out
+java -enableassertions JApplet 'AF((-Xb)&EGb)' BCTLNEW VERB.out ; cat VERB.out
 rm default.out
-java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW default.out ; cat default.out
+#java -enableassertions JApplet 'EGE((Fa&-a)&E(XXbUb))' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'EGE((Fa&-a))' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'AF((b>X-b)&EGA(b&a))' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW default.out ; cat default.out
+#java -enableassertions JApplet 'A-GF(Aa>E(b>AGAAa))' BCTLNEW default.out ; cat default.out
 echo foo
 #java JApplet  'AFGG--FEXb' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet  'E-A(Ec|(c>Ab))' BCTLNEW VERB.out ; cat VERB.out
