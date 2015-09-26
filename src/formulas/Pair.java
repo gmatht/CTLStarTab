@@ -11,17 +11,18 @@ public final class Pair {
 	}
 
 	// Convert an integer into a pair
-	public Pair(int max_x, int max_y, int i){
-	    this.y=(i/max_x);
-	    this.x=(i%max_x);
-	    assert(x<max_x);
-	    assert(y<max_y);
-	    assert(toInt(max_x,max_y)==i);
+	static public Pair ofInt(int max_x, int i){
+	    int xx,yy;
+	    yy=(i/max_x);
+	    xx=(i%max_x);
+	    assert(xx<max_x);
+	    Pair ret = new Pair(xx,yy);
+	    assert(ret.toInt(max_x)==i);
+	    return ret;
 	}
 
-	public int toInt(int max_x, int max_y) {
+	public int toInt(int max_x) {
 	    assert(x<max_x);
-	    assert(y<max_y);
 	    return(x+(y*max_x));
 	}
 
