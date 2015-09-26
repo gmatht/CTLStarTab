@@ -76,12 +76,15 @@ public abstract class JBranch {
             }
         }
 	if (!JNode.use_no_star) return true; 
+	//if (type()!="H") return true; 
         e = col.getEventualities_AU();
-        for (int f : e) {
-            if ((f == col.state_E) && satsifiedBy_AU(f,-1) == null) {
+        for (int f : e) { if (type()=="H" || (f == col.state_E))
+	{
+            //if ((f == col.state_E) && satsifiedBy_AU(f,-1) == null) {
+            if (satsifiedBy_AU(f,-1) == null) {
                 return false;
             }
-        }
+	}}
         return true;
     }
 
@@ -159,6 +162,7 @@ public abstract class JBranch {
 	int f = sf.negn(sf.left(sf.left(x))); //x = -(aYb) -> f =-a
 	if (y == -1) {
 	    if (e.int2Hue(col.state_hue).get(f)) return parent;
+	    if (type()=="H"){
 	    boolean all_sat=true;
 	    /*for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
 		if (satsifiedBy_AU(x,i) == null) all_sat = false;
@@ -171,6 +175,7 @@ public abstract class JBranch {
 	    }
 		
 	    if (all_sat) {return parent;}
+	    }
 	} else {
 	    int f2 = sf.right(y);
 	    if (f2==-1) {
