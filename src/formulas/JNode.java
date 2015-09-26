@@ -550,9 +550,15 @@ public class JNode {
 		    for (JNode c: eDecendants) {
 
 		else*/ 
-	        //if (!JNode.use_no_star) 
-		{
+	        if (JNode.use_no_star) {
+		    prune();
 		    for (JNode c: eDecendants) {
+                    	if (c.b!=null && !c.b.eventualitiesSatsified() && !c.col.pruned) {
+				c.prune();
+			}
+		    }
+		} else {
+		   for (JNode c: eDecendants) {
                     if (c.b!=null && c.b.eventualitiesSatsified() && !c.col.pruned) {
                         if (!b.eventualitiesSatsified()) {
                             out.println("???");
@@ -572,8 +578,8 @@ public class JNode {
                         }
                     }
                     c.prune();
-		 }
-                }
+		  }
+		}
                 return;
                  
             }
