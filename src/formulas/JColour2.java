@@ -170,7 +170,7 @@ public class JColour2 {
         throw new RuntimeException();
         }*/
 	state_E=c.state_E;
-	int i0=1; if (state_E >= 0) i0=0;
+	int i0=1; //if (state_E >= 0) i0=0;
         num_hues = bi.bitCount() + i0;
         hues = new int[num_hues];
 	JHueEnum e=JHueEnum.e;

@@ -27,7 +27,7 @@ public abstract class JBranch {
         ArrayList<Integer> e = col.getEventualities();
         ArrayList<JNode> r = new ArrayList<JNode>() ;
         if (col.state_E < 0) for (int f : e) {
-	    JNode c=satisfied_by.get(f);
+	    JNode c=satisfied_by_D.get(f);
             if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
         }
 	if (!JNode.use_no_star) return r; 
@@ -162,19 +162,8 @@ public abstract class JBranch {
 	int f = sf.negn(sf.left(sf.left(x))); //x = -(aYb) -> f =-a
 	if (y == -1) {
 	    if (e.int2Hue(col.state_hue).get(f)) return parent;
-	    if (type()=="H"){
-	    boolean all_sat=true;
-	    /*for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
-		if (satsifiedBy_AU(x,i) == null) all_sat = false;
-	    }
-	    for (int i: e.int2Hue(col.state_hue).hasTop("Y")) {
-		if (satsifiedBy_AU(x,i) == null) all_sat = false;
-	    }*/
-	    for (int i: col.getEventualities_AU2()) {
-	        if (satsifiedBy_AU(x,i) == null) all_sat = false;
-	    }
-		
-	    if (all_sat) {return parent;}
+	    if (type()=="H" && ((JChooseHue)this).all_Y_sat(x)){
+		return parent;
 	    }
 	} else {
 	    int f2 = sf.right(y);
@@ -519,6 +508,8 @@ final class JChooseHue extends JBranch {
     //int E_formula; // The formula that must exist in some hue;
     HashMap<Integer, JNode> satisfied_by = new HashMap<Integer, JNode>();
 
+    ArrayList<Integer> E_nostar;
+
     @Override
     public String type() {
         return "H";
@@ -532,11 +523,39 @@ final class JChooseHue extends JBranch {
     public JChooseHue(JColour2 c) {
         col = c;
         max_children = c.num_hues;
+	E_nostar=JHueEnum.e.int2Hue(c.state_hue).get_E_nostar();
 	if (JNode.use_no_star) {
-		max_children += (JHueEnum.e.int2Hue(c.state_hue)).get_E_nostar().size();
+    		max_children *= E_nostar.size()+1;
 	}
 	
     }
+
+    // returns true if all secondary eventualities have been fulfilled.
+    public boolean all_Y_sat(int x){
+
+	    /*for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
+		if (satsifiedBy_AU(x,i) == null) all_sat = false;
+	    }
+	    for (int i: e.int2Hue(col.state_hue).hasTop("Y")) {
+		if (satsifiedBy_AU(x,i) == null) all_sat = false;
+	    }*/
+    	    int index = E_nostar.indexOf(x)+1;
+	    if (num_children_created() < col.num_hues + (index*col.num_hues)) {
+		assert(!isFull());
+		return false;
+	    }
+	    for (int i=0; i<col.num_hues; i++) {
+		JNode node2 = children.get(i + (index*col.num_hues));
+		if (node2.pruned) break;
+		JBranch b2 = node2.b;
+	    	for (int j: b2.col.getEventualities_AU2()) {
+	        	if (b2.satsifiedBy_AU(x,j) == null) return false;
+	    	}
+	    }
+
+	    return true;
+    }
+		
 
     public static JChooseHue create(JColour2 c) {
         return new JChooseHue(c);
@@ -563,12 +582,19 @@ final class JChooseHue extends JBranch {
         }
         JColour2 c = new JColour2(col);
         int n = num_children_created();
-	if (n >= c.num_hues) {
-		c.state_E = (JHueEnum.e.int2Hue(c.state_hue)).get_E_nostar().get(n-col.num_hues);
-	} else {
-		c.state_E = -1;
-		c.setFirstHue(n);
+	if (JNode.use_no_star) {
+	       Pair ne = Pair.ofInt(col.num_hues,n);
+	       //n=ne.x;
+	       if (ne.y==0) {
+		  if  (col.state_E == -1 || !JHueEnum.e.h_has_f(col.state_hue,col.state_E)) {
+		     c.state_E=-1;
+		  }
+	       } else {
+		   c.state_E = (E_nostar.get(ne.y-1));
+	       }
 	}
+	c.setFirstHue(n);
+	
         c.normalise();
         JNode node = JNode.getNodeX(c, this); //Can't re-use node here as we have to know whether we are JChooseHue or a TemporalSuccessor
         //JNode node=JNode.getNode(c);
@@ -603,6 +629,7 @@ final class JChooseHue extends JBranch {
 
     public ArrayList<JNode> eChildren() {
         ArrayList<JNode> first_child = new ArrayList<JNode>();
+	/*
 	if (col.state_E != -1) {
 	    // the term first_child comes because before implementing BEXP/state_E child 0 was always the unchanged one
 	    for (JNode child: children) {
@@ -613,6 +640,7 @@ final class JChooseHue extends JBranch {
 	    }
 	    return first_child;
 	}
+	*/
         if (!children.isEmpty())
             first_child.add(children.get(0));
         return first_child;
@@ -643,9 +671,9 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             //  Then we will make sure we throw an exception before we reach MAXINT.
             max_children=Integer.MAX_VALUE;
         } else {
-	    //max_children = 1 << (c.num_hues - 1);
-	    if (c.state_E == -1) max_children = 1 << (c.num_hues - 1);
-            else                max_children = (1 << (c.num_hues    )) - 1;
+	    max_children = 1 << (c.num_hues - 1);
+	    //if (c.state_E == -1) max_children = 1 << (c.num_hues - 1);
+            //else                max_children = (1 << (c.num_hues    )) - 1;
         }
 
 	//JNode.out.println("T " + toString() + " m" + max_children + " h" + c.num_hues + " sE" + c.state_E);
@@ -662,7 +690,8 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             return null;
         }
         int n = num_children_created();
-	if (col.state_E != -1) n++;
+	//if (col.state_E != -1) n++;
+	n++;
         JColour2 c = new JColour2(col, new java.math.BigInteger(Integer.toString(n)));
         c.normalise();
         JNode node = JNode.getNode(c, this);
