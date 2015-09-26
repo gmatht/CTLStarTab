@@ -1,5 +1,16 @@
+#!/bin/bash
 #mkdir v1.0; git --work-tree v1.0 checkout v1.0 -- src# (cd v1.0/src/formulas/ && javac *.java; cd .. javac *.java)
 i=1
+issat(){
+    if grep is.sat $1 > /dev/null
+    then echo -n Y
+    elif grep is.unsat $1 > /dev/null
+    then echo -n N
+    else echo -n _
+    fi
+}
+    
+
 if [ ! -z "$1" ]
 then
 	i=$1
@@ -11,10 +22,6 @@ fi
 mkdir -p problems.dir
 while read formula
 do
-    	while [ `xprintidle` -lt 9999 ]
-	do
-	    sleep 5
-	done
 	rm /tmp/old.out /tmp/new.out 2> /dev/null
 	#echo ----------------------------------------------------------------
 	printf " $i:%s\r" "	$formula              "
@@ -25,7 +32,7 @@ do
 ) 2> /dev/null > /dev/null
 	#echo
 	#echo if  "`grep sat /tmp/old.out`" != "`grep sat /tmp/new.out`" 
-
+	echo "$i	$formula	`issat /tmp/old.$i.out``issat /tmp/new.$i.out`" >> all/all.txt
 	mkdir -p all
 	if grep unsat /tmp/old.$i.out /tmp/new.$i.out > /dev/null 2> /dev/null
 	then
@@ -48,6 +55,7 @@ do
 		rm /tmp/old.$i.out* /tmp/new.$i.out*
 	fi
 
+    	while [ `xprintidle` -lt 9999 ] ;do sleep 5; done
 		
 	i=$((i+1))
 done
