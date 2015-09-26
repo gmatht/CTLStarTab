@@ -1,6 +1,6 @@
 package formulas;
 
-public class Pair {
+public final class Pair {
 	
 	int x;
 	int y;
@@ -9,7 +9,22 @@ public class Pair {
 		this.x=x;
 		this.y=y;
 	}
-	
+
+	// Convert an integer into a pair
+	public Pair(int max_x, int max_y, int i){
+	    this.y=(i/max_x);
+	    this.x=(i%max_x);
+	    assert(x<max_x);
+	    assert(y<max_y);
+	    assert(toInt(max_x,max_y)==i);
+	}
+
+	public toInt(int max_x, int max_y) {
+	    assert(x<max_x);
+	    assert(y<max_y);
+	    return(x+(y*max_x));
+	}
+
 	public int x(){
 		return x;
 	}
