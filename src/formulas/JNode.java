@@ -440,7 +440,9 @@ public class JNode {
  if (!pruned && !logged.contains(this)) {
 	logged.add(this);
 	out.println(log_line(depth, "", reason));
-	for (JNode c : b.eChildren()) {
+	//for (JNode c : b.eChildren()) {
+	//for (JNode c : b.children) {
+	for (JNode c : b.requiredChildren()) {
 		c.log_graph_(depth+1,reason,logged);
 	}
  }

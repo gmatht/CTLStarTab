@@ -22,6 +22,36 @@ public abstract class JBranch {
 	     satisfied_by_AU = new HashMap<Pair, JNode>();
     }
 
+    public ArrayList<JNode> requiredChildren() {
+	if (type()=="H") {return children;};
+        ArrayList<Integer> e = col.getEventualities();
+        ArrayList<JNode> r = new ArrayList<JNode>() ;
+        if (col.state_E < 0) for (int f : e) {
+	    JNode c=satisfied_by.get(f);
+            if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
+        }
+	if (!JNode.use_no_star) return r; 
+	//if (type()!="H") return true; 
+        e = col.getEventualities_AU();
+        for (int f : e) { //if (type()=="H" || (f == col.state_E))
+            //if ((f == col.state_E) && satsifiedBy_AU(f,-1) == null) {
+	    JNode c=satisfied_by_AU.get(new Pair(f,-1));
+            if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
+	    ArrayList<Integer> e2 = col.getEventualities_AU2();
+            for (int f2 : e2) { 
+	    	c=satisfied_by_AU.get(new Pair(f,f2));
+            	if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
+	    }
+	}
+	if (r.size()==0) for (JNode c : children) {
+	    if (!c.col.pruned) {
+		r.add(c);
+		return r;
+	    }
+	}
+        return r;
+    }
+
 
     public int num_children_created() {
         return children.size();
