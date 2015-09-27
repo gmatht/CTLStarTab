@@ -584,7 +584,7 @@ final class JChooseHue extends JBranch {
         int n = num_children_created();
 	if (JNode.use_no_star) {
 	       Pair ne = Pair.ofInt(col.num_hues,n);
-	       //n=ne.x;
+	       n=ne.x;
 	       if (ne.y==0) {
 		  if  (col.state_E == -1 || !JHueEnum.e.h_has_f(col.state_hue,col.state_E)) {
 		     c.state_E=-1;
@@ -611,19 +611,18 @@ final class JChooseHue extends JBranch {
 
     @Override
     public boolean isCovered() {
-        if (num_children_created() != max_children) {
-            return false;
-        }
+	boolean hue_sat[] = new boolean[col.num_hues];
+	boolean E_sat[] = new boolean[E_nostar.size()+1];
         for (int i = 0; i < num_children_created(); i++) {
             JNode child;
             child = getChild(i);
-            if (child == null) {
-                return false;
-            }
-            if (child.pruned) {
-                return false;
-            }
+            if (child != null && !child.pruned) {
+		hue_sat[i%col.num_hues]=true;
+		  E_sat[i/col.num_hues]=true;
+	    }
         }
+	for (boolean b: hue_sat) if (!b) return false;
+	for (boolean b:   E_sat) if (!b) return false;
         return true;
     }
 
@@ -672,11 +671,7 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             max_children=Integer.MAX_VALUE;
         } else {
 	    max_children = 1 << (c.num_hues - 1);
-	    //if (c.state_E == -1) max_children = 1 << (c.num_hues - 1);
-            //else                max_children = (1 << (c.num_hues    )) - 1;
         }
-
-	//JNode.out.println("T " + toString() + " m" + max_children + " h" + c.num_hues + " sE" + c.state_E);
     }
 
     @Override
@@ -690,8 +685,6 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             return null;
         }
         int n = num_children_created();
-	//if (col.state_E != -1) n++;
-	n++;
         JColour2 c = new JColour2(col, new java.math.BigInteger(Integer.toString(n)));
         c.normalise();
         JNode node = JNode.getNode(c, this);
