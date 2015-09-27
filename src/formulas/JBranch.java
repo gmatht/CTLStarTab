@@ -12,14 +12,12 @@ public abstract class JBranch {
 //	int num_children_created=0;
     int max_children = 0;
     private HashMap<Integer, JNode> satisfied_by = new HashMap<Integer, JNode>();
-    private HashMap<Pair, JNode> satisfied_by_AU = new HashMap<Pair, JNode>();
 
     /* The direct subchild which satisfies the eventuality (not the final node) */
     private HashMap<Integer, JNode> satisfied_by_D = new HashMap<Integer, JNode>();
     public void clear_eventualities () {
 	     satisfied_by = new HashMap<Integer, JNode>();
 	     satisfied_by_D = new HashMap<Integer, JNode>();
-	     satisfied_by_AU = new HashMap<Pair, JNode>();
     }
 
     public ArrayList<JNode> requiredChildren() {
@@ -30,19 +28,6 @@ public abstract class JBranch {
 	    JNode c=satisfied_by_D.get(f);
             if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
         }
-	if (!JNode.use_no_star) return r; 
-	//if (type()!="H") return true; 
-        e = col.getEventualities_AU();
-        for (int f : e) { //if (type()=="H" || (f == col.state_E))
-            //if ((f == col.state_E) && satsifiedBy_AU(f,-1) == null) {
-	    JNode c=satisfied_by_AU.get(new Pair(f,-1));
-            if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
-	    ArrayList<Integer> e2 = col.getEventualities_AU2();
-            for (int f2 : e2) { 
-	    	c=satisfied_by_AU.get(new Pair(f,f2));
-            	if (c != null && r.indexOf(c)==-1 && c!=parent) r.add(c);
-	    }
-	}
 	if (r.size()==0) for (JNode c : children) {
 	    if (!c.col.pruned) {
 		r.add(c);
@@ -75,17 +60,7 @@ public abstract class JBranch {
                 return false;
             }
         }
-	if (!JNode.use_no_star) return true; 
-	//if (type()!="H") return true; 
-        e = col.getEventualities_AU();
-        for (int f : e) { if (type()=="H" || (f == col.state_E))
-	{
-            //if ((f == col.state_E) && satsifiedBy_AU(f,-1) == null) {
-            if (satsifiedBy_AU(f,-1) == null) {
-                return false;
-            }
-	}}
-        return true;
+	return true; 
     }
 
     public String eventualityString() {
@@ -103,23 +78,7 @@ public abstract class JBranch {
             }
             comma=", ";
         }
-        if (!JNode.use_no_star) return (s+"}");
-	s += "}{";
 
-        e = col.getEventualities_AU();
-        for (int f : e) {
-	    JNode sat_by=satsifiedBy_AU(f,-1);
-            if (sat_by == null) { s+=comma+JHue.formulaToString(f)+":0"; } 
-            else { s+=comma+JHue.formulaToString(f)+":"+sat_by.toString(); }
-            comma=", ";
-	    ArrayList<Integer> e2 = col.getEventualities_AU2();
-	    if (JHueEnum.e.sf.topChar(f) != 'I') for (int f2 : e2) {
-		String evStr= "("+JHue.formulaToString(f)+", "+JHue.formulaToString(f2)+")";
-		sat_by=satsifiedBy_AU(f,f2);
-            	if (sat_by == null) { s+=comma+evStr+":0"; } 
-            	else { s+=comma+evStr+":"+sat_by.toString(); }
-	    }
-        }
         return s+"}";
     }
 
@@ -152,55 +111,6 @@ public abstract class JBranch {
             }
             return satisfied_by.get(f);
         }
-    }
-
-    // x index of -Y (-AU) formula
-    // y -1 or index of Y (AU) or U formula
-    public JNode satsifiedBy_AUY(int x, int y) {
-	JHueEnum e = JHueEnum.e;
-      Subformulas sf = e.sf;
-	int f = sf.negn(sf.left(sf.left(x))); //x = -(aYb) -> f =-a
-	if (y == -1) {
-	    if (e.int2Hue(col.state_hue).get(f)) return parent;
-	    if (type()=="H" && ((JChooseHue)this).all_Y_sat(x)){
-		return parent;
-	    }
-	} else {
-	    int f2 = sf.right(y);
-	    if (f2==-1) {
-		JNode.out.print("RHS="+JHue.formulaToString(y));
-		assert false;
-	    }
-	    if (e.int2Hue(col.state_hue).get(f2)  ) return parent;
-	    if (e.int2Hue(col.hues[0]).get(f2)) return parent;
-	}
-	return null;
-    }
-
-    public JNode satsifiedBy_AUI(int x) {
-	JHueEnum e = JHueEnum.e;
-      Subformulas sf = e.sf;
-      int y=-1;
-	int f = (sf.right(x)); //x = (aIb) -> f b 
-	if (e.int2Hue(col.state_hue).get(f)) return parent;
-	return null;
-    }
-   
-    public JNode satsifiedBy_AU(int x, int y) {
-	JNode sat_by = satisfied_by_AU.get(new Pair(x,y));
-	Subformulas sf = JHueEnum.e.sf;
-	switch (sf.topChar(x)) {
-	    case 'I': assert y<=-1; sat_by = satsifiedBy_AUI(x); break;
-	    case '-': sat_by= satsifiedBy_AUY(x,y); break;
-	    default:  throw new RuntimeException("Invalid AU Eventuality");
-	}
-	if (sat_by != null) return sat_by;
-	 sat_by = satisfied_by_AU.get(new Pair(x,y));
-        if (sat_by != null && sat_by.pruned) {
-                    return null;
-        }
-        return sat_by;
-
     }
 
     public JNode satsifiedBy_D(int f) {
@@ -258,35 +168,6 @@ public abstract class JBranch {
         return updated;
     }
 
-    public boolean update_eventuality_AU(int f, int y) {
-        boolean updated = false;
-        JNode sat_by = satisfied_by_AU.get(new Pair(f,y));
-        if (sat_by != null) {
-            if (sat_by.pruned) {
-                sat_by = null;
-                satisfied_by_AU.put(new Pair(f,y), null);
-                updated = true;
-            }
-        }
-        if (sat_by == null) {
-	    ArrayList<JNode> childa = eChildren();
-	    if (y==-1)       childa = children;
-
-            for (JNode c : childa) {
-                if (c.b != null && !c.pruned) {
-		    if (!JHueEnum.e.int2Hue(c.col.state_hue).get(f)) continue;
-                    sat_by = c.b.satsifiedBy_AU(f,y);
-                    if (sat_by != null) {
-                        satisfied_by_AU.put(new Pair(f,y), sat_by);
-                	//satisfied_by_D.put(f, c);
-                        return true;
-                    }
-                }
-            }
-        }
-        return updated;
-    }
-
     public boolean update_eventualities() {
         boolean updated = update_eventualities_();
         if (updated) parent.update_eventualities();
@@ -302,22 +183,8 @@ public abstract class JBranch {
         for (int i : e) {
             if (update_eventuality(i)) { updated = true; }
         }
-	if (!JNode.use_no_star) {
-            if (updated) parent.update_eventualities();
-	    return updated;
-	}
-	//JHue sh = JHueEnum.e.int2Hue(col.state_hue);
-        //e = sh.getEventualities_AU();
-	e = col.getEventualities_AU();
-	ArrayList<Integer> e2 = col.getEventualities_AU2();
-        for (int i : e) {
-	    {if (JHueEnum.e.sf.topChar(i) != 'I') for (int j : e2) {
-		//JNode.out.println("("+i+","+j+")");
-            	if (update_eventuality_AU(i,j)) { updated = true; }
-            }}
-            if (update_eventuality_AU(i,-1)) { updated = true; }
-        }
-        return updated;
+        if (updated) parent.update_eventualities();
+	return updated;
     }
     ArrayList<JNode> children = new ArrayList<JNode>();
     static JBinaryRule or_rule = new JOrRule(), until_rule = new JUntilRule("U"), not_until_rule = new JNotUntilRule("U");
@@ -530,33 +397,6 @@ final class JChooseHue extends JBranch {
 	
     }
 
-    // returns true if all secondary eventualities have been fulfilled.
-    public boolean all_Y_sat(int x){
-
-	    /*for (int i: e.int2Hue(col.hues[0]).hasTop("U")) {
-		if (satsifiedBy_AU(x,i) == null) all_sat = false;
-	    }
-	    for (int i: e.int2Hue(col.state_hue).hasTop("Y")) {
-		if (satsifiedBy_AU(x,i) == null) all_sat = false;
-	    }*/
-    	    int index = E_nostar.indexOf(x)+1;
-	    if (num_children_created() < col.num_hues + (index*col.num_hues)) {
-		assert(!isFull());
-		return false;
-	    }
-	    for (int i=0; i<col.num_hues; i++) {
-		JNode node2 = children.get(i + (index*col.num_hues));
-		if (node2.pruned) break;
-		JBranch b2 = node2.b;
-	    	for (int j: b2.col.getEventualities_AU2()) {
-	        	if (b2.satsifiedBy_AU(x,j) == null) return false;
-	    	}
-	    }
-
-	    return true;
-    }
-		
-
     public static JChooseHue create(JColour2 c) {
         return new JChooseHue(c);
     }
@@ -567,14 +407,6 @@ final class JChooseHue extends JBranch {
         return (num_children_created() > 0);
     }
 
-    /*
-    public JChooseHue(JNode node) {
-    JColour2 c=node.col;
-    parent=node;
-    col=c;
-    max_children=c.num_hues;
-    }
-     */
     @Override
     public JNode addchild() {
         if (isFull()) {

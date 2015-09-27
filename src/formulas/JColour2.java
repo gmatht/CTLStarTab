@@ -388,35 +388,15 @@ public class JColour2 {
     public java.util.ArrayList<Integer> getEventualities() {
 	Subformulas sf = JHueEnum.e.sf;
 	ArrayList<Integer>     ev ;
-	if (state_E==-1) ev=JHueEnum.e.int2Hue(hues[0]).getEventualities();
-	else ev = new ArrayList<Integer>();
-	if (JNode.use_no_star) ev=JHueEnum.e.int2Hue(state_hue).addEventualities(ev);
+	ev=JHueEnum.e.int2Hue(hues[0]).getEventualities();
+	if (JNode.use_no_star) {
+	    ev=JHueEnum.e.int2Hue(state_hue).addEventualities(ev);
+	    if (state_E != -1 && sf.topChar(state_E) == 'I') {
+		ev.add(sf.right(state_E));
+	    }
+	}
 	return ev;
     }
-
-    public java.util.ArrayList<Integer> getEventualities_AU() {
-	Subformulas sf = JHueEnum.e.sf;
-	ArrayList ev = JHueEnum.e.int2Hue(state_hue).getEventualities_AU();
-	if (state_E != -1 && sf.topChar(state_E) == 'I') 
-	    ev.add(state_E);
-	return ev;
-    }
-    public java.util.ArrayList<Integer> getEventualities_AU2() {
-	Subformulas sf = JHueEnum.e.sf;
-	ArrayList<Integer>     ev=new ArrayList<Integer>(2);
-	JHueEnum.e.int2Hue(hues[0]).addEventualities_AU2('U',ev);
-        ev=JHueEnum.e.int2Hue(state_hue).addEventualities_AU2('Y',ev);
-	return ev;
-    }
-	/*if (state_E < 0) {
-	//        return JHueEnum.e.int2Hue(hues[0]).getEventualities();
-	//} else {
-		java.util.ArrayList<Integer> se = new java.util.ArrayList<Integer>(1);
-		if ("YI".indexOf(sf.topChar(state_E))>1) {
-			se.add(state_E);
-		}
-		return se;
-	}*/
 
     public boolean hasContradiction() {
         return contradiction;
