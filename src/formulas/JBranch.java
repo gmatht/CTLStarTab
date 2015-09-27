@@ -55,7 +55,7 @@ public abstract class JBranch {
 
     public boolean eventualitiesSatsified() {
         ArrayList<Integer> e = col.getEventualities();
-        if (col.state_E < 0) for (int f : e) {
+        for (int f : e) {
             if (satsifiedBy(f) == null) {
                 return false;
             }
@@ -392,7 +392,7 @@ final class JChooseHue extends JBranch {
         max_children = c.num_hues;
 	E_nostar=JHueEnum.e.int2Hue(c.state_hue).get_E_nostar();
 	if (JNode.use_no_star) {
-    		max_children *= E_nostar.size()+1;
+    		max_children *= E_nostar.size()+2;
 	}
 	
     }
@@ -422,7 +422,11 @@ final class JChooseHue extends JBranch {
 		     c.state_E=-1;
 		  }
 	       } else {
-		   c.state_E = (E_nostar.get(ne.y-1));
+		   if (ne.y==1) {
+		        c.state_E=-1;
+		   } else {
+		        c.state_E = (E_nostar.get(ne.y-2));
+		   }
 	       }
 	}
 	c.setFirstHue(n);
@@ -444,9 +448,9 @@ final class JChooseHue extends JBranch {
     @Override
     public boolean isCovered() {
 	boolean hue_sat[] = new boolean[col.num_hues];
-	boolean E_sat[] = new boolean[E_nostar.size()+1];
+	boolean E_sat[] = new boolean[E_nostar.size()+2];
+        JNode child;
         for (int i = 0; i < num_children_created(); i++) {
-            JNode child;
             child = getChild(i);
             if (child != null && !child.pruned) {
 		hue_sat[i%col.num_hues]=true;
@@ -455,6 +459,8 @@ final class JChooseHue extends JBranch {
         }
 	for (boolean b: hue_sat) if (!b) return false;
 	for (boolean b:   E_sat) if (!b) return false;
+        child = getChild(0);
+	if (child == null || child.pruned) return false;
         return true;
     }
 
