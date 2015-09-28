@@ -8,7 +8,7 @@ getmod () {
 }
 #javac `getmod *java`
 echo  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-javac FormulaTree.java AUXLogic.java Pair.java JColour2.java JBranch.java  JNode.java  JHue.java JHueEnum.java Subformulas.java Timeout.java Symbol.java FormulaTree.java JHNode.java JHBranch.java TreeNode.java ParseException.java Tokenizer.java  Logic.java ClosureSubset2.java PosSubF.java && (
+(ls -ot | head -n2 | grep run.sh || javac FormulaTree.java AUXLogic.java Pair.java JColour2.java JBranch.java  JNode.java  JHue.java JHueEnum.java Subformulas.java Timeout.java Symbol.java FormulaTree.java JHNode.java JHBranch.java TreeNode.java ParseException.java Tokenizer.java  Logic.java ClosureSubset2.java PosSubF.java) && (
 
 j2() {
 cd v1.0/src/ && java JApplet "$1" BCTLNEW VERB.out ; cat VERB.out
@@ -68,7 +68,7 @@ rm VERB.out
 #java -enableassertions JApplet 'AF((b>X-b)&EGA(b&a))' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW default.out ; cat default.out
 #java -enableassertions JApplet 'A-GF(Aa>E(b>AGAAa))' BCTLNEW default.out ; cat default.out
-java -enableassertions JApplet '-(AFAGAFAGq>AXAFAGAFGq)' BCTLNEW default.out ; cat default.out
+#java -enableassertions JApplet '-(AFAGAFAGq>AXAFAGAFGq)' BCTLNEW default.out ; cat default.out
 echo foo
 #java JApplet  'AFGG--FEXb' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet  'E-A(Ec|(c>Ab))' BCTLNEW VERB.out ; cat VERB.out
@@ -81,7 +81,14 @@ echo foo
 #java -enableassertions JApplet '-(EGF(bUa)|F-(bUEFa))' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet '(AFG-(bUa)&GFa)' BCTLNEW VERB.out ; cat VERB.out
 #j1 '(AFG-a&GEFa)' 
-j1 '(EFGXX(Aa&-a)|(Xb>a))' 
+#j1 '(EFGXX(Aa&-a)|(Xb>a))' 
+#j1 'AGEXEGc&AGEXEG-c&(AFAGc)'
+#j1 '-(AG(EXp&EX-p)>(EGFp=EGEFp))'
+#j1 '(AG(EXp&EX-p)&(EGEFp))'
+#j1 '-(AGAFp=AGFp)'
+j1 '-((AGEXc&AGEX-c&(AGAFc)&AGAF(-c)&-s&-c&(AG(((-c&-s)>AX-s)&(c>AX(-c>s))&(s>AXs)))>(AFs&-AXAXAXAXAXAXAXs)))'
+#j1 'AGEX-c&(AFGc)'
+
 )
  
 
