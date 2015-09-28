@@ -2,7 +2,7 @@
 #./check.sh < /home/john/uni/PhD/code/ocaml/parser3/mark_formulas.txt
 #git pull&&  make *java&& (cd formulas && javac *java) &&
 n=1
-< problems.txt fgrep -v '|  !=' | grep 'sat.*sat' | cut -f2 | sort -u | tr '~N' '-X' | PROBLEMS=problems_filtered.txt ./check.sh $n | tee -a check.out3
+(grep -o  "'....*'" formulas/run.sh | tr -d "'"; < problems.txt fgrep -v '|  !=' | grep 'sat.*sat' | cut -f2) | sort -u | tr '~N' '-X' | PROBLEMS=problems_filtered.txt ./check.sh $n | tee -a check.out3
 #n=953000
 n=1500000
 n="$(($(cat all/all.txt | cut -f1 | sort -nr | head -n1)+1))"
