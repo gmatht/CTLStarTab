@@ -151,6 +151,7 @@ public class JColour2 {
 	    case 'I': s+="&("+(he.ft.getSubformulas()[he.sf.left(state_E)].toV1String()
 	    		+"U"
 		+he.ft.getSubformulas()[he.sf.right(state_E)].toV1String())+")"; break;
+	    case '-': break;
 	    default: throw new RuntimeException();
 	}
 	if (state_E>=0) { s+="&"+he.int2Hue(hues[0]).toFormula(); }
