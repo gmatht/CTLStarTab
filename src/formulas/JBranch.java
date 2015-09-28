@@ -409,6 +409,7 @@ final class JChooseHue extends JBranch {
 
     @Override
     public JNode addchild() {
+	JHueEnum he=JHueEnum.e;
         if (isFull()) {
             return null;
         }
@@ -418,7 +419,11 @@ final class JChooseHue extends JBranch {
 	       Pair ne = Pair.ofInt(col.num_hues,n);
 	       n=ne.x;
 	       if (ne.y==0) {
-		  if  (col.state_E == -1 || !JHueEnum.e.h_has_f(col.state_hue,col.state_E)) {
+		   int s_h=col.state_hue, s_E=col.state_E;
+		  if  (col.state_E == -1 || 
+			  !he.h_has_f(s_h,s_E) ||
+			  (he.sf.topChar(s_E) == 'I' && he.h_has_f(s_h,(he.sf.right(s_E)))))
+		  {
 		     c.state_E=-1;
 		  }
 	       } else {
