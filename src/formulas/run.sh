@@ -10,6 +10,13 @@ getmod () {
 echo  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 javac FormulaTree.java AUXLogic.java Pair.java JColour2.java JBranch.java  JNode.java  JHue.java JHueEnum.java Subformulas.java Timeout.java Symbol.java FormulaTree.java JHNode.java JHBranch.java TreeNode.java ParseException.java Tokenizer.java  Logic.java ClosureSubset2.java PosSubF.java && (
 
+j2() {
+cd v1.0/src/ && java JApplet "$1" BCTLNEW VERB.out ; cat VERB.out
+}
+j1() {
+java JApplet "$1" BCTLNEW VERB.out ; cat VERB.out
+}
+
 cd ..
 rm VERB.out
 #java JApplet '(Bp)Y(Bq)&(B-p)&(B-q)' ; cat default.out
@@ -55,8 +62,7 @@ rm VERB.out
 #java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGA(AF-b&Fb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'AF((b>X-Ab)&EGA(b&a))' BCTLNEW VERB.out ; cat VERB.out
-java -enableassertions JApplet 'AF((-Xb)&EGb)' BCTLNEW VERB.out ; cat VERB.out
-rm default.out
+##java -enableassertions JApplet 'AF((-Xb)&EGb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGE((Fa&-a)&E(XXbUb))' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'EGE((Fa&-a))' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet 'AF((b>X-b)&EGA(b&a))' BCTLNEW VERB.out ; cat VERB.out
@@ -68,6 +74,14 @@ echo foo
 #java JApplet  'E-A(Ec|(c>Ab))' BCTLNEW VERB.out ; cat VERB.out
 #java JApplet `tail -n1 test_formulas.txt` BCTLNEW VERB.out ; cat VERB.out
 #java JApplet 'AXp' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'EG(b&AGF-Xb)' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'GE((Fa&-a))' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'EGE((Xa&-a))' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet 'AF((b>X-b)&EGb)' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet '-(EGF(bUa)|F-(bUEFa))' BCTLNEW VERB.out ; cat VERB.out
+#java -enableassertions JApplet '(AFG-(bUa)&GFa)' BCTLNEW VERB.out ; cat VERB.out
+#j1 '(AFG-a&GEFa)' 
+j1 '(EFGXX(Aa&-a)|(Xb>a))' 
 )
  
 

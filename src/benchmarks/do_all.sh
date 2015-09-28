@@ -1,5 +1,7 @@
-SECS=60
 SECS=3600
+SECS=10
+
+cd benchmarks
 
 killset() {
     killall do_set.sh

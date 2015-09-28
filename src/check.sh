@@ -1,5 +1,5 @@
 #!/bin/bash
-#mkdir v1.0; git --work-tree v1.0 checkout v1.0 -- src# (cd v1.0/src/formulas/ && javac *.java; cd .. javac *.java)
+#mkdir v1.0; git --work-tree v1.0 checkout v1.0 -- src;(cd v1.0/src/formulas/ && javac *.java; cd .. javac *.java);(cd formulas && javac *.java; cd .. javac *.java)
 i=1
 issat(){
     if grep is.sat $1 > /dev/null
@@ -22,12 +22,12 @@ fi
 mkdir -p problems.dir
 while read formula
 do
-	rm /tmp/old.out /tmp/new.out 2> /dev/null
+	rm /tmp/old.$i.out /tmp/new.$i.out 2> /dev/null
 	#echo ----------------------------------------------------------------
 	printf " $i:%s\r" "	$formula              "
 (
-	timeout 5 java JApplet $formula BCTLNEW /tmp/new.$i.out 2> /tmp/new.$i.out.err &
-	(cd v1.0/src && timeout 5 java JApplet ''$formula BCTLNEW /tmp/old.$i.out > /tmp/old.$i.out.err) &
+	                timeout 5 java -Xmx1G -enableassertions JApplet "$formula" BCTLNEW /tmp/new.$i.out 2> /tmp/new.$i.out.err &
+	(cd v1.0/src && timeout 5 java -Xmx1G                   JApplet "$formula" BCTLNEW /tmp/old.$i.out 2> /tmp/old.$i.out.err) &
 	wait
 ) 2> /dev/null > /dev/null
 	#echo
@@ -46,7 +46,7 @@ do
 
 	if [ "`grep sat /tmp/old.$i.out`" != "`grep sat /tmp/new.$i.out`" ] 
 	then
-	    	printf "\r"
+	    	printf "\r                                                          \r"
 		echo "$i	$formula	| `grep sat /tmp/old.$i.out` != `grep sat /tmp/new.$i.out`" | tee -a $PROBLEMS 
 		mv /tmp/old.$i.out* /tmp/new.$i.out* problems.dir
 		echo
@@ -55,9 +55,7 @@ do
 		rm /tmp/old.$i.out* /tmp/new.$i.out*
 	fi
 
-    	while [ `xprintidle` -lt 9999 ] ;do sleep 5; done
+    	while [ `xprintidle` -lt 1999 ] ;do sleep 5; done
 		
 	i=$((i+1))
 done
-	
-
