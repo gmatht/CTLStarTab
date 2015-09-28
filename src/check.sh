@@ -1,5 +1,5 @@
 #!/bin/bash
-#mkdir v1.0; git --work-tree v1.0 checkout v1.0 -- src# (cd v1.0/src/formulas/ && javac *.java; cd .. javac *.java)
+#mkdir v1.0; git --work-tree v1.0 checkout v1.0 -- src;(cd v1.0/src/formulas/ && javac *.java; cd .. javac *.java);(cd formulas && javac *.java; cd .. javac *.java)
 i=1
 issat(){
     if grep is.sat $1 > /dev/null
@@ -46,7 +46,7 @@ do
 
 	if [ "`grep sat /tmp/old.$i.out`" != "`grep sat /tmp/new.$i.out`" ] 
 	then
-	    	printf "\r"
+	    	printf "\r                                                          \r"
 		echo "$i	$formula	| `grep sat /tmp/old.$i.out` != `grep sat /tmp/new.$i.out`" | tee -a $PROBLEMS 
 		mv /tmp/old.$i.out* /tmp/new.$i.out* problems.dir
 		echo
@@ -55,7 +55,7 @@ do
 		rm /tmp/old.$i.out* /tmp/new.$i.out*
 	fi
 
-    	while [ `xprintidle` -lt 9999 ] ;do sleep 5; done
+    	while [ `xprintidle` -lt 1999 ] ;do sleep 5; done
 		
 	i=$((i+1))
 done

@@ -79,7 +79,8 @@ echo foo
 #java -enableassertions JApplet 'AF((b>X-b)&EGb)' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet '-(EGF(bUa)|F-(bUEFa))' BCTLNEW VERB.out ; cat VERB.out
 #java -enableassertions JApplet '(AFG-(bUa)&GFa)' BCTLNEW VERB.out ; cat VERB.out
-j1 '(AFG-a&GEFa)' 
+#j1 '(AFG-a&GEFa)' 
+j1 '(EFGXX(Aa&-a)|(Xb>a))' 
 )
  
 

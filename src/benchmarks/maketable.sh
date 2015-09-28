@@ -89,8 +89,10 @@ cd output
 cd ../output
 #exit
 #summary | sed 's/[	 ]/	\&/g'
-summary | sed -f <(make_sed) | column -t
 #paste <( grep olour FLL10NY*out | sed 's/[^.]*.//' | sort -n | grep -v '+' | tr -dc '0123456789\n ' ) <(grep user FLL10NY*time | sed 's/[^.]*.//' | sort -n | sed s/.*:// | sed s/user.*data/ | sed s/)
 #paste <(get_colours) <(get_time)
 #get_time
 #get_colours
+
+#summary | sed -f <(make_sed) | column -t
+full_tables
