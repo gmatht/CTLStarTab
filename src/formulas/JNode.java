@@ -53,6 +53,7 @@ public class JNode {
         pruned = true;
         //update_eventualities();
 	//JNode.out.println ("Pruned "+toString());
+	if (!col.contradiction) JNode.out.println ("PRUNED "+toString()+" "+col.toFormula());
         uncovered.remove(this);
         unfulfilled.remove(this);
         for (JBranch pb: parents) {

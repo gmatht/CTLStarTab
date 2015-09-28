@@ -170,6 +170,28 @@ public class FormulaTree {
           }
           throw new RuntimeException("unrecognized arity in FormulaTree.toString()");
      }
+
+
+     public String toV1String(){
+         if (root.isZeroary()){
+             return ""+root.getContent().toChar();
+          }
+          if (root.isUnary()){
+	      if (root.getContent().toChar() == 'B') {
+                 return "AX"+leftSubtree().toV1String();
+	      } else {
+                 return ""+root.getContent().toChar()+leftSubtree().toV1String();
+	      }
+          }
+          if (root.isBinary()){
+	      switch (root.getContent().toChar()) {
+		  case 'Y': return "A("+leftSubtree().toV1String()+"U"+rightSubtree().toV1String()+")";
+                  case 'I': return "E("+leftSubtree().toV1String()+"U"+rightSubtree().toV1String()+")";
+                  default:  return "("+leftSubtree().toV1String()+root.getContent().toChar()+rightSubtree().toV1String()+")";
+	      }
+          }
+          throw new RuntimeException("unrecognized arity in FormulaTree.toV1String()");
+     }
      
      public String abbrev(){
     	 return logic.abbreviate(this).toString();

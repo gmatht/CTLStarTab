@@ -133,6 +133,33 @@ public class JColour2 {
         s = s + '}';
         return s;
     }
+    
+    public String toFormula() {
+        JHueEnum he = JHueEnum.e;
+	String s = "A"+he.int2Hue(state_hue).toFormula();
+	s+="&A("+he.int2Hue(hues[0]).toFormula();
+        for (int i = 1; i < num_hues; i++) {
+	    s+="|"+he.int2Hue(hues[i]).toFormula();
+	}
+	s+=")";
+        for (int i = 0; i < num_hues; i++) {
+	    s+="&E"+he.int2Hue(hues[i]).toFormula();
+	}
+	if (state_E>=0) switch (he.sf.topChar(state_E)){
+	    case 'B': s+="&X";
+		      s+=(he.ft.getSubformulas()[he.sf.left(state_E)].toV1String());break;
+	    case 'I': s+="&("+(he.ft.getSubformulas()[he.sf.left(state_E)].toV1String()
+	    		+"U"
+		+he.ft.getSubformulas()[he.sf.right(state_E)].toV1String())+")"; break;
+	    default: throw new RuntimeException();
+	}
+	if (state_E>=0) { s+="&"+he.int2Hue(hues[0]).toFormula(); }
+
+	return s;
+    }
+
+
+
 
     public String toString() {
 	return toString(-3,-3);
@@ -175,7 +202,7 @@ public class JColour2 {
         hues = new int[num_hues];
 	JHueEnum e=JHueEnum.e;
 	if (JNode.use_no_star) {
-		//JNode.out.println("AA: "+ e.toString(c.state_hue));
+		//JNode.out.println("AA: "+ state_E + " "+ e.toString(c.state_hue));
 		state_hue=e.temporalSuccessor(c.state_hue);
 		if (state_E >=0) {
 		    	int add=state_E;
@@ -197,6 +224,8 @@ public class JColour2 {
             }
         }
         //System.out.println(c.toString()+ " -> "+toString());
+		//JNode.out.println("AD: "+ e.toString(state_hue));
+		//JNode.out.println("AE: "+toString());
     }
 
 //    public JColour2(JColour2 c, int h, boolean essential) {

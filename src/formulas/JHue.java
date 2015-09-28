@@ -307,6 +307,18 @@ public class JHue extends java.util.BitSet {
             //return JHueEnum.e.ft.getSubformulas()[f].toString();
         }
 
+public String toFormula() {
+	String s="(";
+        String comma="";
+	for (int i=nextSetBit(0); i!=-1 ;i=nextSetBit(i+1)) {
+	    s+=comma+"("+JHueEnum.e.ft.getSubformulas()[i].toV1String()+")";
+            comma="&";
+	}
+	s=s+")";
+
+	return s;
+}
+
 public String toString(int formula) {
 	String s="{";
         String comma="";
