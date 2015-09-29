@@ -86,7 +86,10 @@ echo foo
 #j1 '-(AG(EXp&EX-p)>(EGFp=EGEFp))'
 #j1 '(AG(EXp&EX-p)&(EGEFp))'
 #j1 '-(AGAFp=AGFp)'
-j1 '-((AGEXc&AGEX-c&(AGAFc)&AGAF(-c)&-s&-c&(AG(((-c&-s)>AX-s)&(c>AX(-c>s))&(s>AXs)))>(AFs&-AXAXAXAXAXAXAXs)))'
+#j1 '-((AGEXc&AGEX-c&(AGAFc)&AGAF(-c)&-s&-c&(AG(((-c&-s)>AX-s)&(c>AX(-c>s))&(s>AXs)))>(AFs&-AXAXAXAXAXAXAXs)))'
+#j1 'FE-A(EA(E-b>(bUb))>b)'
+j1 'FEE(EA(A--b|Fb)&-b)'
+#j2 'FE(A(Ab|Fb)&-b)'
 #j1 'AGEX-c&(AFGc)'
 
 )
