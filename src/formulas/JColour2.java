@@ -297,35 +297,40 @@ public class JColour2 {
 
     
     public void normalise() {
-        normalise_();
+        boolean[] old_Aformulas = new boolean[0];
+        boolean[] Aformulas = normalise_();
 	if (JNode.use_no_star) {
-        	normalise_(); 
-        	normalise_(); // make sure A formulas can go from path -> state ->path
+	    while (!Arrays.equals(Aformulas,old_Aformulas)) {
+		//JNode.out.println(Arrays.toString(Aformulas));
+		old_Aformulas=Aformulas;
+        	Aformulas=normalise_(); // make sure A formulas can go from path -> state ->path
+	    }
 	}
         isNormalised=true;
     }
 
     
-    private void normalise_() {
+    private boolean[] normalise_() {
+        JHueEnum he = JHueEnum.e;
+        Subformulas sf = he.sf;
+        int num_subformulas = sf.count();
+        boolean[] Aformulas = new boolean[num_subformulas];
+
     	assertNotLocked();
         //System.out.format("Norm A %s \n",toString());
-        JHueEnum he = JHueEnum.e;
 	//JNode.out.println("NormC");
 
         if (state_hue == 0) {
-                contradiction = true; return;
+                contradiction = true; return Aformulas;
 	}
 	
         for (int j = 0; j < num_hues; j++) {
             if (hues[j] == 0) {
-                contradiction = true; return;
+                contradiction = true; return Aformulas;
             }
         }
 
         if (num_hues > 1 || JNode.use_no_star) {
-            Subformulas sf = he.sf;
-            int num_subformulas = sf.count();
-            boolean[] Aformulas = new boolean[num_subformulas];
             for (int i = 0; i < num_subformulas; i++) {
                 Aformulas[i] = false;
             }
@@ -397,11 +402,12 @@ public class JColour2 {
                           if (JNode.log)
                         	  JNode.out.format("Note: %s is a bad hue\n", JHueEnum.e.toString(hues[j]));
                           
-                          return;                	  
+                          return Aformulas;                	  
                       }
                   //}
                 }
             }
+
         }
 //                		System.out.format("Norm B %s \n",toString());
 	if (state_hue == 0) contradiction = true;
@@ -409,6 +415,7 @@ public class JColour2 {
         if (num_hues > max_num_hues_in_colour) {
             max_num_hues_in_colour = num_hues;
         }
+	return Aformulas;
     }
 
     public void setFirstHue(int index_of_hue) {
