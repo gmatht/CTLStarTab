@@ -1,11 +1,11 @@
 #!/bin/bash
 if [ "$BENCH_MODE" = "MIX" ]
 then
-	alpha=q
+	alpha=Fq
 	beta=q
 else
-	alpha=AFGq
-	beta=AFAGq
+	alpha=q
+	beta=q
 fi
 
 if [ "$BENCH_MODE" = "ORIG" ]
