@@ -1,4 +1,4 @@
 (cd formulas && javac *java)
 javac *java
-jar c formulas/*class *class > formulas.jar
+jar cm <(echo Permissions: sandbox) formulas/*class *class > formulas.jar
 
