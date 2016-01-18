@@ -9,7 +9,7 @@ public class Stableau {
 	public Stableau(TemporalGraph t,OrderedColour oc){
 		owner=t;
 		node= new Node[1];
-		//node[0]=new Node(oc);
+		node[0]=new Node(oc);
 	}
 	
 	

@@ -31,7 +31,7 @@ public class PerfectHues {
 					if (!foundps){
 						isPerfect[i]=false;
 						change=true;
-						//t.tell("Losing hue "+i);
+						//System.out.println("DEBUG PerfectHues (1) losing "+i);
 					}
 				}
 				
@@ -49,7 +49,7 @@ public class PerfectHues {
 					if (isPerfect[i]){
 						for(int k=0; k<events.length;k++){
 							if (!sees[i][k]){
-								if (t.contains(i,k)){
+								if (t.contains(i,events[k])){
 									sees[i][k]=true;
 									evchange=true;
 								}
