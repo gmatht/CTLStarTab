@@ -114,10 +114,9 @@ regression() {
 cd output 
 cd ../output
 
-regression | tee benchmark_regression.txt
-exit
 full_tables | tee benchmark_fulltables.txt
 summary | sed -f <(make_sed) | column -t
+regression | tee benchmark_regression.txt
 
 exit
 #exit

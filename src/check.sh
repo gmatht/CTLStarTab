@@ -55,7 +55,7 @@ do
 		rm /tmp/old.$i.out* /tmp/new.$i.out*
 	fi
 
-    	while [ `xprintidle` -lt 1999 ] ;do sleep 5; done
+    	while [ `xprintidle` -lt 1999 ] ;do sleep 1; done
 		
 	i=$((i+1))
 done

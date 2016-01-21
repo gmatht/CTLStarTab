@@ -1,0 +1,75 @@
+diff --git a/src/formulas/Node.java b/src/formulas/Node.java
+index e392e77..a0bb867 100755
+--- a/src/formulas/Node.java
++++ b/src/formulas/Node.java
+@@ -14,6 +14,10 @@ public class Node {
+ 		dirn=d;
+ 	}
+ 	
++	public Node(OrderedColour oc) {
++		// TODO Auto-generated constructor stub
++	}
++
+ 	public void setParent(int i,int d){
+ 		parent=i;
+ 		dirn=d;
+diff --git a/src/formulas/NodeStore.java b/src/formulas/NodeStore.java
+index d0345c2..285c4dc 100755
+--- a/src/formulas/NodeStore.java
++++ b/src/formulas/NodeStore.java
+@@ -9,14 +9,18 @@ public class NodeStore {
+ 	private int parent; //strict parent ie not via loops, -1 for root, -2 if node abandoned
+ 	private int dirn; //direction from parent to here, -1 if no parent
+ 	
+-	public NodeStore(int number, OrderedColour oc, int[] succ, int parent, int dirn) {
++	public NodeStore(int number, OrderedColour orderedColour, int[] succ, int parent, int dirn) {
+ 
+ 		this.number=number;
+ 		//this.label = label;
+ 		this.succ = succ;
+ 		this.parent = parent;
+ 		this.dirn = dirn;
+-		this.oc=oc;
++		this.oc=orderedColour;
++	}
++
++	public NodeStore(int nn, boolean[] label, int[] suc, int parent2, int dirn2) {
++		// TODO Auto-generated constructor stub
+ 	}
+ 	
+ 	
+diff --git a/src/formulas/PerfectHues.java b/src/formulas/PerfectHues.java
+index 86c37a1..4a2ed83 100755
+--- a/src/formulas/PerfectHues.java
++++ b/src/formulas/PerfectHues.java
+@@ -31,7 +31,7 @@ public class PerfectHues {
+ 					if (!foundps){
+ 						isPerfect[i]=false;
+ 						change=true;
+-						//t.tell("Losing hue "+i);
++						//System.out.println("DEBUG PerfectHues (1) losing "+i);
+ 					}
+ 				}
+ 				
+@@ -49,7 +49,7 @@ public class PerfectHues {
+ 					if (isPerfect[i]){
+ 						for(int k=0; k<events.length;k++){
+ 							if (!sees[i][k]){
+-								if (t.contains(i,k)){
++								if (t.contains(i,events[k])){
+ 									sees[i][k]=true;
+ 									evchange=true;
+ 								}
+diff --git a/src/formulas/Stableau.java b/src/formulas/Stableau.java
+index 07139e6..e4b02fe 100755
+--- a/src/formulas/Stableau.java
++++ b/src/formulas/Stableau.java
+@@ -9,7 +9,7 @@ public class Stableau {
+ 	public Stableau(TemporalGraph t,OrderedColour oc){
+ 		owner=t;
+ 		node= new Node[1];
+-		//node[0]=new Node(oc);
++		node[0]=new Node(oc);
+ 	}
+ 	
+ 	
