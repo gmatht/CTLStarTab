@@ -1,4 +1,5 @@
 #!/bin/bash
+#First run do_all.sh
 #set -x
 SET="FLL10NY"
 #grep olour FLL10NY*out | sort -k2 -n -t '.' | grep -v '+
@@ -115,11 +116,9 @@ cd output
 cd ../output
 
 regression | tee benchmark_regression.txt
-exit
 full_tables | tee benchmark_fulltables.txt
 summary | sed -f <(make_sed) | column -t
 
-exit
 #exit
 #summary | sed 's/[	 ]/	\&/g' > benchmark_summary.txt
 #paste <( grep olour FLL10NY*out | sed 's/[^.]*.//' | sort -n | grep -v '+' | tr -dc '0123456789\n ' ) <(grep user FLL10NY*time | sed 's/[^.]*.//' | sort -n | sed s/.*:// | sed s/user.*data/ | sed s/)
