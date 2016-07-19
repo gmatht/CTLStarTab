@@ -191,15 +191,13 @@ public class JColour2 {
         if (c == null) {
             throw new RuntimeException();
         }
-        if (JNode.use_optional_hues) {
-        	throw new RuntimeException("BUG: Why using BigInteger and Optional Hues?");
-        }
         /*                if (c.he == null) {
         throw new RuntimeException();
         }*/
 	state_E=c.state_E;
 	int i0=1; //if (state_E >= 0) i0=0;
         num_hues = bi.bitCount() + i0;
+        if (JNode.use_optional_hues) num_hues=c.num_hues; 
         hues = new int[num_hues];
 	JHueEnum e=JHueEnum.e;
 	if (JNode.use_no_star) {
@@ -220,6 +218,13 @@ public class JColour2 {
 	if (i0>0) hues[0]   = e.temporalSuccessor(c.hues[0]);
         //hues[0]=he.temporalSuccessor(c.hues[0]);
         int j = i0;
+        if (JNode.use_optional_hues) {
+        	//throw new RuntimeException("BUG: Why using BigInteger and Optional Hues?");
+        	for (int i = i0; i < c.num_hues; i++) {
+                	hues[i] = JHueEnum.e.setEssential(c.hues[i],false);
+		}
+		return;
+        }
         for (int i = i0; i < c.num_hues; i++) {
             if (bi.testBit(i - i0)) {
                 //System.out.println(">>>"+JHueEnum.e.toString(c.hues[i]));
@@ -280,7 +285,8 @@ public class JColour2 {
         for (int j = 1; j < num_hues; j++) {
         	int hue=hues[j];
             if (hue != first_hue) {
-            	if (JHueEnum.e.isEssential(hue) || !JHNode.is_hue_bad(hue)) {
+            	//if (JHueEnum.e.isEssential(hue) || !JHNode.is_hue_bad(hue)) {
+            	if (JHueEnum.e.isEssential(hue) || !JHueEnum.e.int2Hue(hue).hasContradiction()) {
             		ts.add(hue);
             	}
             }

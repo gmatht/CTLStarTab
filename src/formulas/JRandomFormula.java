@@ -80,7 +80,7 @@ public class JRandomFormula {
         } catch (Exception e) {
         }
 		
-		JNode.use_optional_hues=false;
+		//JNode.use_optional_hues=false;
 		JNode.use_hue_tableau=false;
 		JRunTab.TestBCTL(2,14, new PrintWriter(System.out));
 		/*while (true) {

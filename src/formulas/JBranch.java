@@ -289,6 +289,9 @@ final class JE extends JDisjunctBranch {
         col = c;
 	hue_index = h;
         max_children = c.num_hues;
+	if (!JHueEnum.e.isEssential(h)) {
+		max_children ++;
+	}
         //System.out.format("dE\n");
         E_formula = f;
     }
@@ -298,17 +301,19 @@ final class JE extends JDisjunctBranch {
         if (isFull()) {
             return null;
         }
-        int n = num_children_created();
-        int h = col.hues[n];
-        //System.out.format("JE using hue %d\n",h);
-        h = JHueEnum.e.addFormula2Hue(E_formula, h);
-
-        //System.out.format("JE using hue2 %d\n",h);
-        JColour2 c = new JColour2(col, h);
+       	int n = num_children_created();
+	if (!JHueEnum.e.isEssential(hue_index)) n--; 
+	if (n<0) {
+        	JColour2 c = new JColour2(col);
+		c.assertFormula(hue_index, E_formula);
+	} else {
+	        int h = col.hues[n];
+		h = JHueEnum.e.addFormula2Hue(E_formula, JHueEnum.e.setEssential(h,true));
+        	JColour2 c = new JColour2(col, h);
+	} 
         c.normalise();
         JNode node = JNode.getNode(c, this);
         children.add(node);
-//		num_children_created++;
         update_eventualities();
         return node;
     }
@@ -394,6 +399,8 @@ final class JChooseHue extends JBranch {
 	if (JNode.use_no_star) {
     		max_children *= E_nostar.size()+2;
 	}
+
+	TODO pick only essential hues!
 	
     }
 
@@ -506,6 +513,10 @@ final class JTemporalSuccessor extends JDisjunctBranch {
             throw new RuntimeException("Temporal Successor taken of Colour with no Hues.");
         }
         col = c;
+        if (JNode.use_optional_hues) {
+		max_children = 1;
+		return;
+	}
         if (c.num_hues > 30) {
             //Integer overflow may ensue
             //throw new RuntimeException();
@@ -639,8 +650,14 @@ final class JBinaryBranch extends JDisjunctBranch {
         formula = f;
         hue_index = hi;
         col = c;
-	if (hi == -1) {max_children=2;}
-	//JNode.out.println("Branch: "+r.topString()+" "+JHue
+	if (hi == -1) {max_children=2;} //state_hue
+	else if (JNode.use_optional_hues) {
+		if (JHueEnum.e.isEssential(c.hues[hi])) {
+			max_children=2;
+		} else {
+			max_children=1;
+		}
+	}
     }
 
     public JNode addchild(int i) {
@@ -653,6 +670,18 @@ final class JBinaryBranch extends JDisjunctBranch {
         Subformulas sf = JHueEnum.e.sf;
 	//JNode.out.println(i);
 		//JNode.out.println("COL0: "+col.toString());
+	if (JNode.use_optional_hues && hue_index != -1) {
+        	if (i>0) {
+                	int new_hue = JHueEnum.e.addFormula2Hue(rule.left_choice(formula), JHueEnum.e.setEssential(col.hues[hue_index],false));
+                	c = new JColour2(col,new_hue);
+                	c.assert_formula(hue_index, rule.right_choice(formula));
+		} else {
+                	int new_hue = JHueEnum.e.addFormula2Hue(rule.right_choice(formula), JHueEnum.e.setEssential(col.hues[hue_index],false));
+                	c = new JColour2(col,new_hue);
+                	c.assert_formula(hue_index, rule.left_choice(formula));
+		}
+	} else {
+		
         switch (i) {
             //Left hand side of or is true
             case 0:
@@ -692,7 +721,8 @@ final class JBinaryBranch extends JDisjunctBranch {
             default:
                 throw new RuntimeException();
         }
-//		num_children_created++;
+
+	} //endif (JNode.use_optional_hues && hue_index != -1)
         c.normalise();
 		//JNode.out.println("COL6: "+c.toString());
        

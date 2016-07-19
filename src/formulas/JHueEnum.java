@@ -42,7 +42,7 @@ public class JHueEnum {
 	public int hue2Int(JHue h) {
 		int i;
                 if (h!=null) {
-                    if (h.hasContradiction()) {
+                    if (h.hasContradiction() && h.isEssential()) {
                         return 0;
                     }
                 }

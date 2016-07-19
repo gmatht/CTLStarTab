@@ -42,8 +42,10 @@ public class JHue extends java.util.BitSet {
 	}
 
 	public boolean isEssential() {
-		return true;
-		// TODO: return super.get(essential_index());
+		//return true;
+		if (!JNode.use_optional_hues) return true;
+		if (statehue) return true;
+		return super.get(essential_index());
 	}
 
 	@Override
