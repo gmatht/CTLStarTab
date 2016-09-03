@@ -1,6 +1,21 @@
 #!/bin/bash
 #set -x
 SET="FLL10NY"
+
+cd benchmarks
+cd ..
+
+#Run do_all.sh first
+if false # ! command -v R
+then
+   if ! sudo apt-get install r-base-core
+   then
+       echo cannot install R
+       #exit
+   fi
+fi
+
+
 #grep olour FLL10NY*out | sort -k2 -n -t '.' | grep -v '+
 get_colours() {
 	grep -H olour $BENCH_MODE"_"$SET*out | sed 's/[^.]*.//' | sort -n | grep -v '+' | tr -dc '0123456789\n ' | sed 's/  / /
@@ -115,7 +130,7 @@ cd output
 cd ../output
 
 full_tables | tee benchmark_fulltables.txt
-summary | sed -f <(make_sed) | column -t
+summary | sed -f <(make_sed) | column -t | tee summary.tex
 regression | tee benchmark_regression.txt
 
 exit
