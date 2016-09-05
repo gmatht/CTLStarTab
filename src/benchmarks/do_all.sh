@@ -16,7 +16,8 @@ killset() {
 for BENCH_MODE in BCTL MIX ORIG
 do
 export BENCH_MODE
-for BENCHMARK_RUNDIR in ../v1.0/src/ # ..
+#for BENCHMARK_RUNDIR in ../v1.0/src/ #  ..
+for BENCHMARK_RUNDIR in ..
 #for BENCHMARK_RUNDIR in .. ../../../mark_v1/src/ # ..
 #for BENCHMARK_RUNDIR in ..  `pwd | sed s,k/src/benchmarks$,k_v1/src/formulas,` # ..
 do

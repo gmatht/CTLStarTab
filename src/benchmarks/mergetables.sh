@@ -1,5 +1,9 @@
 #!/bin/bash
 #First run maketables.sh and do_all.sh
+if [ ! -e benchmarks ]
+then 
+    cd ..
+fi
 human() {
 echo "Benchmarks of $ID" | sed '
 s/ORIG/original BCTL*/
@@ -33,6 +37,7 @@ echo "\\caption{$1}"
 echo "\\end{sidewaystable}"
 }
 
+(
 echo "%Made by CTLStarTab/src/benchmarks/mergetables.sh"
 header
 for ID in ORIG.FLL10-NY MIX.FLL10-NY BCTL.FLL10-NY BCTL.FLL10-YN ORIG.FLL10-YN MIX.FLL10-YN
@@ -66,3 +71,4 @@ do
 	##echo "\\hline"
 	footer "\\label{tab:$ID} $ID: `human $ID`"
 done
+) | tee output/mergetables.tex

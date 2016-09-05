@@ -131,6 +131,7 @@ cd ../output
 
 full_tables | tee benchmark_fulltables.txt
 summary | sed -f <(make_sed) | column -t | tee summary.tex
+< ../output/summary.tex cut -d\& -f1,2,8 > summary-i.tex
 regression | tee benchmark_regression.txt
 
 exit
