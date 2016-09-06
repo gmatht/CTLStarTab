@@ -1,6 +1,14 @@
 #!/bin/bash
+set -e
 #set -x
 SET="FLL10NY"
+
+#Run do_all.sh first
+cd benchmarks 2> /dev/null || true
+pwd
+export V1_DIR=$(ls -d `pwd | sed s,k/src/benchmarks$,k_v1/src,` ../v1.0/src 2> /dev/null | head -n1)
+set | grep V1_DIR
+cd ..
 
 #Run do_all.sh first
 if ! command -v R
@@ -12,7 +20,6 @@ then
    fi
 fi
 
-V1_DIR=$(ls -d `pwd | sed s,k/src/benchmarks$,k_v1/src/formulas,` ../v1.0/src | head -n1)
 
 #grep olour FLL10NY*out | sort -k2 -n -t '.' | grep -v '+
 get_colours() {
@@ -128,7 +135,9 @@ cd output
 cd ../output
 
 full_tables | tee benchmark_fulltables.txt
-summary | sed -f <(make_sed) | column -t
+summary | sed -f <(make_sed) | column -t | tee summary.tex
+< ../output/summary.tex cut -d\& -f1,2,8 > summary-i.tex
+set +e
 regression | tee benchmark_regression.txt
 
 exit
