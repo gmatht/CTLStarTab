@@ -124,37 +124,44 @@ public class QuickTab implements TransitionStructure {
 	}
 
 	public static void main(String[] args){
-		
-		sop(true,"Test satisfiability in CTL* using QuickTab ");
-		sop(true,"Enter formula to test.");
-		
-		String inps=Keyboard.getInput();
+
+		String inps;
+		if (args.length>0) {
+			inps=args[0];
+		} else {
+			sop(true,"Test satisfiability in CTL* using QuickTab ");
+			sop(true,"Enter formula to test.");
+			inps=Keyboard.getInput();
+		}
 		
 		if (inps.charAt(0)=='\'') //use a built in example numbered
 			inps=bie(inps);
 		
-        try {
+		try {
 
-            sop(true,"Test satisfiability in CTL* of "+inps);
+			sop(true,"Test satisfiability in CTL* of "+inps);
 
-            Logic logic=new AUXLogic();
+			Logic logic=new AUXLogic();
 
-            FormulaTree f=logic.parse(inps);
+			FormulaTree f=logic.parse(inps);
 
-            sop(true,"parsed to "+f.toString());
-            f=logic.disabbreviate(f);
+			sop(true,"parsed to "+f.toString());
+			f=logic.disabbreviate(f);
 
-            sop(true,"Disabbreviates to = "+f.inFull());
+			sop(true,"Disabbreviates to = "+f.inFull());
 
-            sop(true,"which has length = "+f.length());
-            
-            QuickTab qt=new QuickTab(f);
-            
-            qt.process();
-            
-        } catch(ParseException e){
-            System.out.println(e.getMessage());       
-        }
+			sop(true,"which has length = "+f.length());
+
+			QuickTab qt=new QuickTab(f);
+
+			if (args.length>0) {
+				qt.goAnsw();
+			} else {
+				qt.process();
+			}
+		} catch(ParseException e){
+			System.out.println(e.getMessage());
+		}
 		
 	}
 	
