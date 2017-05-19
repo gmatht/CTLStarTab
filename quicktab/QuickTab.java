@@ -32,6 +32,18 @@ public class QuickTab implements TransitionStructure {
 	private int maxrepeats=2;
 	
 	private static BackTrackStack bts=new BackTrackStack();
+
+	private int job_no=1;
+	private int split_depth=1;
+	private int last_depth=0;
+	private long start_time    = System.nanoTime();
+	private long start_time_ms = System.currentTimeMillis();
+	private static String JOB_NO = System.getenv("JOB_NO");
+
+	int width=0;
+	int num_jobs=1;
+
+	private static java.util.Random rnd = new java.util.Random();
 	
 	private static int finalResult=4; 
 	//0 parse error
@@ -62,6 +74,14 @@ public class QuickTab implements TransitionStructure {
 		node=new Node[1];
 		node[0]=new Node(f,0);
 		//bts=new BackTrackStack();
+
+		if (JOB_NO != null) {
+			String[] m = JOB_NO.split("[/@]");
+			job_no      = Integer.parseInt(m[0]);
+			num_jobs    = Integer.parseInt(m[1]);
+			split_depth = Integer.parseInt(m[2]);
+		}
+		//System.out.println("JOB " + job_no + num_jobs + split_depth);
 	}
 	
 	public static int decide(String fs,long maxMillis, int version){
@@ -714,6 +734,7 @@ public class QuickTab implements TransitionStructure {
 		System.out.println("The tableau is SUCCESSFUL. Took "+stepNo+" steps.");
 		finished=true;
 		System.out.println("We can conclude the formula is satisfiable.");
+                System.err.println("IsSat!" + _job_info());
 		finalResult=1;
 		
 		return false;
@@ -743,10 +764,44 @@ public class QuickTab implements TransitionStructure {
 	}
 
 	//do one step with or without user input
-	private void oneStep(boolean wuip) {		
+	private void oneStep(boolean wuip) {
 		if (backtracking)
 			backTrackOne(wuip);
-		else oneForward(wuip);
+		else {
+//			if (bts.size() > last_depth && bts.size() == split_depth) {
+//			if (bts.size() > last_depth && bts.size() < 1000) {
+//				if(dump_depth) printf ("%lu\n", bts.size());
+//				width[bts.size()]++;
+//				if (bts.size() <= clock_depth)
+//					std::cout << "^" << bts.size() << ":" << clock() << "\n";
+//				width++;
+//			}
+			if (bts.size() == split_depth && last_depth < split_depth) {
+				int assigned_to_job = to_job(width)+1;
+				width++;
+				System.out.print("Assigned width:"+width+" to job:"+assigned_to_job);
+				if ( assigned_to_job != job_no ) {
+					System.out.println(" Backtrack");
+					usedUnjustifiedBacktrack=true;
+					while (bts.size() >= split_depth)
+						backTrackOne(wuip);
+					last_depth=bts.size();
+					//std::cout << "H" << hash << "," << job_no << "/" << num_of_job << std::endl;
+					//goto loop;
+					return;
+				} else {
+					System.out.println(" ACCEPT");
+				}
+			}
+
+			if (last_depth != bts.size()) {
+				System.out.println("Depth: " 
+					+ last_depth + "->" + bts.size()
+					+ " (" + (System.currentTimeMillis() - start_time_ms)+"ms)" );
+				last_depth = bts.size();
+			}
+			oneForward(wuip);
+		}
 	}
 		
 	private void oneForward(boolean wuip) {
@@ -1161,6 +1216,21 @@ public class QuickTab implements TransitionStructure {
 		if (oup) System.out.println(string);
 	}
 
+	private int to_job (int i) {
+	        int m = (i % num_jobs);
+	        int r = (i / num_jobs);
+	        if (r>0) {
+			rnd.setSeed(r);
+	                return((rnd.nextInt(num_jobs)+m)%num_jobs);
+	        } else {
+	                return m;
+	        }
+	}
+
+	private String _job_info() {
+		return (" JOB="+JOB_NO+" SEC="+(double)((System.nanoTime()-start_time)/1000000)/1000+" WD="+width+" ST="+stepNo );
+	}
+
 	private void backTrackOne(boolean wuip) {
 		
 		stepNo++;
@@ -1169,6 +1239,8 @@ public class QuickTab implements TransitionStructure {
 			System.out.println("Backtracked to before first choice point.");
 			finished=true;
 			System.out.println("Tableau construction FAILED after "+stepNo+" steps.");
+
+                        System.err.println("Unsat!" + _job_info());
 			
 			if (usedUnjustifiedBacktrack){
 				System.out.println("However we can not conclude anything definite.");
@@ -2458,6 +2530,7 @@ public class QuickTab implements TransitionStructure {
 		System.out.println("The tableau is SUCCESSFUL. Took "+stepNo+" steps.");
 		finished=true;
 		System.out.println("We can conclude the formula is satisfiable.");
+                System.err.println("IsSat!" + _job_info());
 		finalResult=1;
 		
 		return false;
