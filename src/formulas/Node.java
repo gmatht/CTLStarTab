@@ -14,6 +14,10 @@ public class Node {
 		dirn=d;
 	}
 	
+	public Node(OrderedColour oc) {
+		// TODO Auto-generated constructor stub
+	}
+
 	public void setParent(int i,int d){
 		parent=i;
 		dirn=d;

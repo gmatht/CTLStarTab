@@ -1,7 +1,26 @@
 #!/bin/bash
-#First run do_all.sh
+set -e
 #set -x
 SET="FLL10NY"
+
+#Run do_all.sh first
+cd benchmarks 2> /dev/null || true
+pwd
+export V1_DIR=$(ls -d `pwd | sed s,k/src/benchmarks$,k_v1/src,` ../v1.0/src 2> /dev/null | head -n1)
+set | grep V1_DIR
+cd ..
+
+#Run do_all.sh first
+if ! command -v R
+then
+   if ! sudo apt-get install r-base-core
+   then
+       echo cannot install R
+       exit
+   fi
+fi
+
+
 #grep olour FLL10NY*out | sort -k2 -n -t '.' | grep -v '+
 get_colours() {
 	grep -H olour $BENCH_MODE"_"$SET*out | sed 's/[^.]*.//' | sort -n | grep -v '+' | tr -dc '0123456789\n ' | sed 's/  / /
@@ -71,7 +90,7 @@ echo "BCTL+BCTL*  combined tableau     |   BCTL* tableau"
 echo "i colors hues col/hue time MB "
 #paste -d \| <(get_ct|tail -n1) <(cd ../v1.0/src/output && get_ct|tail -n1) | sed 's/|$/|? ? ? ? ? ?/
 get_ct>$BENCH_MODE.$SET.ct
-(cd ../v1.0/src/output && get_ct) > $BENCH_MODE.$SET.ct1
+(cd $V1_DIR/output && get_ct) > $BENCH_MODE.$SET.ct1
 < $BENCH_MODE.$SET.ct cut -d\  -f1,2 > $BENCH_MODE.$SET.colours.txt
 < $BENCH_MODE.$SET.ct cut -d\  -f1,3 > $BENCH_MODE.$SET.hues.txt
 ADD_Q_SET='s/|$/|? ? ? ? ? ?/
@@ -91,7 +110,7 @@ echo ____
 for BENCH_MODE in BCTL MIX ORIG; do
 for SET in FLL10NY FLL10YN FLL10-NY FLL10-YN; do
 echo -n $BENCH_MODE $SET\ 
-paste -d \| <(get_ct|tail -n1) <(cd ../v1.0/src/output && get_ct|tail -n1) | sed 's/|$/|? ? ? ? ? ?/
+paste -d \| <(get_ct|tail -n1) <(cd $V1_DIR/output && get_ct|tail -n1) | sed 's/|$/|? ? ? ? ? ?/
 s/^|/? ? ? ? ? ?|/
 s/|/ | /' 
 done 
@@ -115,9 +134,16 @@ regression() {
 cd output 
 cd ../output
 
-regression | tee benchmark_regression.txt
+#<<<<<<< HEAD
+#regression | tee benchmark_regression.txt
+#full_tables | tee benchmark_fulltables.txt
+#summary | sed -f <(make_sed) | column -t | tee benchmark_summary.tex
 full_tables | tee benchmark_fulltables.txt
-summary | sed -f <(make_sed) | column -t | tee benchmark_summary.tex
+summary | sed -f <(make_sed) | column -t | tee summary.tex
+< ../output/summary.tex cut -d\& -f1,2,8 > summary-i.tex
+set +e
+regression | tee benchmark_regression.txt
+#>>>>>>> eb9594e32d117141761758bc33c6f0125aed4342
 
 #exit
 #summary | sed 's/[	 ]/	\&/g' > benchmark_summary.txt
