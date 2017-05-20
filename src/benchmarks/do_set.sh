@@ -2,7 +2,7 @@
 set=$1
 OPWD=`pwd`
 #java JApplet formula [BCTLNEW|BCTLOLD|CTL] outputfile
-i=1;
+i=0;
 while read -r formula
 do
 	base=output/"$BENCH_MODE"_$set.$i

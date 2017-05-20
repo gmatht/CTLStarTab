@@ -117,7 +117,7 @@ cd ../output
 
 regression | tee benchmark_regression.txt
 full_tables | tee benchmark_fulltables.txt
-summary | sed -f <(make_sed) | column -t
+summary | sed -f <(make_sed) | column -t | tee benchmark_summary.tex
 
 #exit
 #summary | sed 's/[	 ]/	\&/g' > benchmark_summary.txt
